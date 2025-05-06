@@ -1,2 +1,3 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_inovcga_inovcga,inovcga.inovcga,model_inovcga_inovcga,base.group_user,1,1,1,1
+access_cga_cga,cga.cga,model_fiscal_regime,base.group_user,1,1,1,1
+access_cga_cga2,cga.cga,model_fiscal_taxe,base.group_user,1,1,1,1
