@@ -1,0 +1,107 @@
+<odoo>
+    <data noupdate="1">
+
+        <!-- Création de Régimes Fiscaux -->
+        <record id="regime_fiscal_igs" model="fiscal.regime">
+            <field name="name">Impôt Général Synthétique</field>
+        </record>
+
+         <!-- Création de Régimes Fiscaux pour les Contribuables Relevant du Réel -->
+        <record id="regime_fiscal_reel" model="fiscal.regime">
+            <field name="name">Contribuables Relevant du Réel</field>
+        </record>
+
+        <!-- Création de Régimes Fiscaux pour les Contribuables Non Professionnels -->
+        <record id="regime_fiscal_non_professionnels" model="fiscal.regime">
+            <field name="name">Contribuables Non Professionnels</field>
+        </record>
+
+        <!-- Création d'Impôts associés au Régime IGS -->
+        <record id="taxe_1" model="fiscal.taxe">
+            <field name="name">1er Trimestre IGS/License</field>
+            <field name="deadline">2025-04-15</field>
+            <field name="regime_id" ref="regime_fiscal_igs"/>
+        </record>
+        <record id="taxe_2" model="fiscal.taxe">
+            <field name="name">2e Trimestre IGS</field>
+            <field name="deadline">2025-07-15</field>
+            <field name="regime_id" ref="regime_fiscal_igs"/>
+        </record>
+        <record id="taxe_3" model="fiscal.taxe">
+            <field name="name">3e Trimestre IGS</field>
+            <field name="deadline">2025-10-15</field>
+            <field name="regime_id" ref="regime_fiscal_igs"/>
+        </record>
+        <record id="taxe_4" model="fiscal.taxe">
+            <field name="name">4e Trimestre IGS</field>
+            <field name="deadline">2026-01-15</field>
+            <field name="regime_id" ref="regime_fiscal_igs"/>
+        </record>
+        <record id="taxe_regularisation" model="fiscal.taxe">
+            <field name="name">Régularisation IGS</field>
+            <field name="deadline">2026-03-15</field>
+            <field name="regime_id" ref="regime_fiscal_igs"/>
+        </record>
+<!--        <record id="taxe_cnps" model="fiscal.taxe">-->
+<!--            <field name="name">CNPS/Retenues Fiscales</field>-->
+<!--            <field name="deadline">15 de chaque mois</field>-->
+<!--            <field name="regime_id" ref="regime_fiscal_igs"/>-->
+<!--        </record>-->
+        <record id="taxe_dsf" model="fiscal.taxe">
+            <field name="name">DSF</field>
+            <field name="deadline">2025-05-15</field>
+            <field name="regime_id" ref="regime_fiscal_igs"/>
+        </record>
+
+
+        <!-- Création d'Impôts associés au Régime -->
+        <record id="taxe_patente" model="fiscal.taxe">
+            <field name="name">Patente</field>
+            <field name="deadline">2025-02-28</field>
+            <field name="regime_id" ref="regime_fiscal_reel"/>
+        </record>
+        <record id="taxe_licence" model="fiscal.taxe">
+            <field name="name">Licence</field>
+            <field name="deadline">2025-02-28</field>
+            <field name="regime_id" ref="regime_fiscal_reel"/>
+        </record>
+<!--        <record id="taxe_declarations_fiscales" model="fiscal.taxe">-->
+<!--            <field name="name">Déclarations Fiscales</field>-->
+<!--            <field name="deadline">15 de chaque mois</field>-->
+<!--            <field name="regime_id" ref="regime_fiscal_reel"/>-->
+<!--        </record>-->
+<!--        <record id="taxe_declarations_sociales" model="fiscal.taxe">-->
+<!--            <field name="name">Déclarations Sociales</field>-->
+<!--            <field name="deadline">15 de chaque mois</field>-->
+<!--            <field name="regime_id" ref="regime_fiscal_reel"/>-->
+<!--        </record>-->
+        <record id="taxe_dsf_1" model="fiscal.taxe">
+            <field name="name">DSF 1</field>
+            <field name="deadline">2025-03-15</field>
+            <field name="regime_id" ref="regime_fiscal_reel"/>
+        </record>
+        <record id="taxe_dsf_2" model="fiscal.taxe">
+            <field name="name">DSF 2</field>
+            <field name="deadline">2025-04-15</field>
+            <field name="regime_id" ref="regime_fiscal_reel"/>
+        </record>
+
+
+        <!-- Création d'Impôts associés au Régime -->
+        <record id="taxe_darp_secteur_public" model="fiscal.taxe">
+            <field name="name">DARP Secteur Public</field>
+            <field name="deadline">2025-07-31</field>
+            <field name="regime_id" ref="regime_fiscal_non_professionnels"/>
+        </record>
+        <record id="taxe_darp_secteur_prive" model="fiscal.taxe">
+            <field name="name">DARP Secteur Privé DGE CIME CSIPLI</field>
+            <field name="deadline">2025-09-30</field>
+            <field name="regime_id" ref="regime_fiscal_non_professionnels"/>
+        </record>
+        <record id="taxe_darp_non_residents" model="fiscal.taxe">
+            <field name="name">DARP des Non-Résidents et Autres Particuliers</field>
+            <field name="deadline">2025-10-31</field>
+            <field name="regime_id" ref="regime_fiscal_non_professionnels"/>
+        </record>
+    </data>
+</odoo>
