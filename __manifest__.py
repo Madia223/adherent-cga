@@ -8,7 +8,7 @@
 Long description of module's purpose
     """,
 
-    'author': "My Company",
+    'author': "INOV CAMEROON",
     'website': "https://www.yourcompany.com",
 
     # Categories can be used to filter modules in modules listing
@@ -26,6 +26,8 @@ Long description of module's purpose
         'views/views.xml',
         'views/fiscal_view.xml',
         'views/templates.xml',
+        'views/adherant.xml',
+
     ],
     # only loaded in demonstration mode
     'demo': [
