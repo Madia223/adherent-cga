@@ -1,20 +1,24 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "inovcga",
+    'name': "GESTION CGA",
 
-    'summary': "Short (1 phrase/line) summary of the module's purpose",
+    'summary': "module Odoo intégrant la gestion des obligations fiscales, la publication des échéances et le suivi des paiements.",
 
     'description': """
-Long description of module's purpose
+            •	Automatiser l'enregistrement des adhérents et le paramétrage de leur régime fiscal.
+            •	Générer et publier les échéanciers fiscaux adaptés à chaque régime.
+            •	Programmer des notifications de rappel avant les échéances.
+            •	Assurer le suivi des paiements des obligations et alerter en cas de retard.
+
     """,
 
-    'author': "My Company",
-    'website': "https://www.yourcompany.com",
+    'author': "INOV CAMEROON",
+    'website': "https://www.inov.cm",
 
     # Categories can be used to filter modules in modules listing
     # Check https://github.com/odoo/odoo/blob/15.0/odoo/addons/base/data/ir_module_category_data.xml
     # for the full list
-    'category': 'Uncategorized',
+    'category': 'Human Resources',
     'version': '0.1',
 
     # any module necessary for this one to work correctly
@@ -26,6 +30,7 @@ Long description of module's purpose
         'views/views.xml',
         'views/fiscal_view.xml',
         'views/templates.xml',
+        'data/fiscal_data.xml',
     ],
     # only loaded in demonstration mode
     'demo': [
