@@ -28,7 +28,7 @@
     'data': [
         'security/ir.model.access.csv',
         'views/views.xml',
-        'views/adherent.xml',
+        'views/adherant.xml',
         'views/fiscal_view.xml',
         'views/templates.xml',
         'data/fiscal_data.xml',
