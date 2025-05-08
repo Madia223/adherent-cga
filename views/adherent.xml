@@ -1,0 +1,43 @@
+<odoo>
+    <!-- Vue Formulaire -->
+    <record id="view_adherant_form" model="ir.ui.view">
+        <field name="name">res.partner.form.inherit</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_generer_echeances"
+                        type="object"
+                        string="Générer Échéances"
+                        class="btn-primary"
+                        icon="fa-calendar"/>
+            </xpath>
+
+            <xpath expr="//field[@name='vat']" position="after">
+                <field name="raison_Sociale"/>
+                <field name="identification_fiscale"/>
+                <field name="regime_id"/>
+
+                <field name="taxe_ids" readonly="1"/>
+                <field name="deadline" readonly="1"/>
+
+            </xpath>
+        </field>
+    </record>
+
+    <!-- vue calendrier -->
+    <record id="view_fiscal_echeance_calendar" model="ir.ui.view">
+        <field name="name">fiscal.echeance.calendar</field>
+        <field name="model">fiscal.echeance</field>
+        <field name="arch" type="xml">
+            <calendar string="Calendrier Fiscal"
+                      date_start="deadline"
+                      color="partner_id"
+                      mode="month">
+                <field name="name"/>
+                <field name="partner_id"/>
+            </calendar>
+        </field>
+    </record>
+
+</odoo>

@@ -1,4 +1,4 @@
-from odoo import models, fields
+from odoo import models, fields, api
 
 class FiscalRegime(models.Model):
     _name = 'fiscal.regime'
@@ -15,3 +15,4 @@ class FiscalTaxe(models.Model):
     name = fields.Char(string='Nom de l\'Impôt', required=True)
     deadline = fields.Date(string='Échéance')
     regime_id = fields.Many2one('fiscal.regime', string='Régime Fiscal', required=True)
+

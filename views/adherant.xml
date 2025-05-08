@@ -1,0 +1,16 @@
+<odoo>
+    <!-- Vue Formulaire -->
+    <record id="view_adherant_form" model="ir.ui.view">
+        <field name="name">res.partner.form.inherit</field>
+        <field name="model">res.partner</field>
+         <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+                <xpath expr="//field[@name='vat']" position="after">
+                        <field name="raison_Sociale"/>
+                        <field name="identification_fiscale"/>
+                        <field name="regime_id"/>
+               </xpath>
+        </field>
+    </record>
+
+</odoo>

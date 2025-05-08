@@ -13,7 +13,10 @@
     """,
 
     'author': "INOV CAMEROON",
+
+
     'website': "https://www.inov.cm",
+
 
     # Categories can be used to filter modules in modules listing
     # Check https://github.com/odoo/odoo/blob/15.0/odoo/addons/base/data/ir_module_category_data.xml
@@ -22,15 +25,21 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base'],
+    'depends': ['base', 'calendar'],
 
     # always loaded
     'data': [
         'security/ir.model.access.csv',
         'views/views.xml',
+        'views/adherent.xml',
         'views/fiscal_view.xml',
         'views/templates.xml',
+
+        'views/adherant.xml',
+
+
         'data/fiscal_data.xml',
+
     ],
     # only loaded in demonstration mode
     'demo': [
