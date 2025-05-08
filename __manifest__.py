@@ -14,7 +14,6 @@
 
     'author': "INOV CAMEROON",
 
-    'website': "https://www.yourcompany.com",
 
     'website': "https://www.inov.cm",
 
