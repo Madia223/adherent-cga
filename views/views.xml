@@ -20,8 +20,8 @@
         </record>
 
         <record id="action_fiscal_echeance_calendar" model="ir.actions.act_window">
-            <field name="name">Calendrier des Échéances</field>
-            <field name="res_model">fiscal.echeance</field>
+            <field name="name">Calendrier des Échéances Fiscale</field>
+            <field name="res_model">fiscal.taxe</field>
             <field name="view_mode">calendar,list,form</field>
         </record>
 

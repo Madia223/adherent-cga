@@ -26,16 +26,16 @@
     </record>
 
     <!-- vue calendrier -->
-    <record id="view_fiscal_echeance_calendar" model="ir.ui.view">
-        <field name="name">fiscal.echeance.calendar</field>
-        <field name="model">fiscal.echeance</field>
+    <record id="view_fiscal_taxe_calendar" model="ir.ui.view">
+        <field name="name">fiscal.taxe.calendar</field>
+        <field name="model">fiscal.taxe</field>
         <field name="arch" type="xml">
-            <calendar string="Calendrier Fiscal"
+            <calendar string="Calendrier des Échéances"
                       date_start="deadline"
-                      color="partner_id"
-                      mode="month">
+                      color="regime_id"
+                      mode="year">
                 <field name="name"/>
-                <field name="partner_id"/>
+                <field name="regime_id"/>
             </calendar>
         </field>
     </record>
