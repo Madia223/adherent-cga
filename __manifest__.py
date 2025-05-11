@@ -22,7 +22,7 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base', 'calendar'],
+    'depends': ['base', 'calendar', 'mail'],
 
     # always loaded
     'data': [
@@ -32,6 +32,9 @@
         'views/fiscal_view.xml',
         'views/templates.xml',
         'data/fiscal_data.xml',
+        'data/cron.xml',
+        'data/action_server.xml',
+        'data/action_server_calendar.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

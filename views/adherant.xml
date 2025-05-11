@@ -5,21 +5,18 @@
         <field name="model">res.partner</field>
         <field name="inherit_id" ref="base.view_partner_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//div[@name='button_box']" position="inside">
-                <button name="action_generer_echeances"
-                        type="object"
-                        string="Générer Échéances"
-                        class="btn-primary"
-                        icon="fa-calendar"/>
-            </xpath>
 
             <xpath expr="//field[@name='vat']" position="after">
                 <field name="raison_Sociale"/>
                 <field name="identification_fiscale"/>
                 <field name="regime_id"/>
 
-                <field name="taxe_ids" readonly="1"/>
-                <field name="deadline" readonly="1"/>
+                <field name="taxe_ids" readonly="1" context="{'default_order': 'deadline'}">
+                    <list string="Impôts liés au régime" editable="bottom" default_order="deadline asc">
+                        <field name="name" string="Nom de l'Impôt"/>
+                        <field name="deadline" string="Échéance"/>
+                    </list>
+                </field>
 
             </xpath>
         </field>

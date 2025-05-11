@@ -22,21 +22,6 @@ class Adherant(models.Model):
         for rec in self:
             rec.deadline = rec.regime_id.taxe_ids and rec.regime_id.taxe_ids[0].deadline or False
 
-    def action_generer_echeances(self):
-        self.ensure_one()
-        FiscalEcheance = self.env['fiscal.echeance']
-
-        # Supprimer les anciennes échéances
-        FiscalEcheance.search([('partner_id', '=', self.id)]).unlink()
-
-        for taxe in self.regime_id.taxe_ids:
-            FiscalEcheance.create({
-                'name': taxe.name,
-                'deadline': taxe.deadline,
-                'partner_id': self.id,
-                'regime_id': self.regime_id.id,
-                'taxe_id': taxe.id
-            })
 
     # @api.model
     # def create(self, vals):
