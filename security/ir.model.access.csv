@@ -2,3 +2,5 @@ id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_cga_cga,cga.cga,model_fiscal_regime,base.group_user,1,1,1,1
 access_cga_cga2,cga.cga,model_fiscal_taxe,base.group_user,1,1,1,1
 access_fiscal_echeance_user,fiscal.echeance.user,model_fiscal_echeance,base.group_user,1,1,1,1
+access_fiscal_payment_user,fiscal.payment.user,model_fiscal_payment,base.group_user,1,1,1,1
+access_fiscal_payment_portal,fiscal.payment,model_fiscal_payment,base.group_portal,1,0,0,0

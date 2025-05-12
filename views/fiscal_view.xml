@@ -2,7 +2,7 @@
   <data>
 
     <record id="view_fiscal_regime_form" model="ir.ui.view">
-      <field name="name">fiscal.regime.form</field>
+      <field name="name">fiscal_regime_form</field>
       <field name="model">fiscal.regime</field>
       <field name="arch" type="xml">
         <form>

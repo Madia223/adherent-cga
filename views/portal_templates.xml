@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+
+        <!-- Template : Échéances Fiscales -->
+        <template id="portal_my_fiscal_echeances" name="Mes Échéances Fiscales">
+            <t t-call="website.layout">
+                <t t-call-assets="web.assets_frontend" t-js="false"/>
+                <div class="container mt16 mb16">
+                    <h2 class="text-center">Mes Échéances Fiscales</h2>
+                    <table class="table table-striped mt32">
+                        <thead>
+                            <tr>
+                                <th>Nom de l'Impôt</th>
+                                <th>Date d'Échéance</th>
+                                <th>Montant</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="fiscal_echeances" t-as="echeance">
+                                <tr>
+                                    <td><t t-esc="echeance.name"/></td>
+                                    <td><t t-esc="echeance.deadline.strftime('%d/%m/%Y') if echeance.deadline else '—'"/></td>
+                                    <td><t t-esc="echeance.amount or '0.00'"/></td>
+                                    <td>
+                                        <span t-if="echeance.payment_status == 'paid'" class="badge badge-success">Payé</span>
+                                        <span t-if="echeance.payment_status == 'unpaid'" class="badge badge-warning">Non payé</span>
+                                        <span t-if="echeance.payment_status == 'late'" class="badge badge-danger">En retard</span>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </div>
+            </t>
+        </template>
+
+        <!-- Template : Paiements Fiscaux -->
+        <template id="portal_my_fiscal_payments" name="Mes Paiements Fiscaux">
+            <t t-call="website.layout">
+                <t t-call-assets="web.assets_frontend" t-js="false"/>
+                <div class="container mt16 mb16">
+                    <h2 class="text-center">Mon Historique de Paiement</h2>
+                    <table class="table table-striped mt32">
+                        <thead>
+                            <tr>
+                                <th>Référence Paiement</th>
+                                <th>Montant</th>
+                                <th>Date de Paiement</th>
+                                <th>Statut</th>
+                                <th>Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="fiscal_payments" t-as="payment">
+                                <tr>
+                                    <td><t t-esc="payment.name"/></td>
+                                    <td><t t-esc="payment.amount or '0.00'"/></td>
+                                    <td><t t-esc="payment.payment_date.strftime('%d/%m/%Y') if payment.payment_date else '—'"/></td>
+                                    <td>
+                                        <span t-if="payment.state == 'done'" class="badge badge-success">Payé</span>
+                                        <span t-if="payment.state == 'draft'" class="badge badge-warning">En attente</span>
+                                        <span t-if="payment.state == 'cancel'" class="badge badge-danger">Annulé</span>
+                                    </td>
+                                    <td><t t-esc="payment.notes or 'Aucune'"/></td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </div>
+            </t>
+        </template>
+
+    </data>
+</odoo>
+
+
+<!-- <?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+
+        Template pour afficher les échéances fiscales sur le portail 
+        <template id="portal_my_fiscal_echeances" name="Mes Échéances Fiscales">
+            <t t-call="website.layout">
+                <div class="container mt16 mb16">
+                    <h2 class="text-center">Mes Échéances Fiscales</h2>
+                    <table class="table table-striped mt32">
+                        <thead>
+                            <tr>
+                                <th>Nom de l'Impôt</th>
+                                <th>Date d'Échéance</th>
+                                <th>Montant</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="fiscal_echeances" t-as="echeance">
+                                <tr>
+                                    <td><t t-esc="echeance.name"/></td>
+                                    <td><t t-esc="echeance.deadline"/></td>
+                                    <td><t t-esc="echeance.amount"/></td>
+                                    <td>
+                                        <span t-if="echeance.payment_status == 'paid'" class="badge badge-success">
+                                            Payé
+                                        </span>
+                                        <span t-if="echeance.payment_status == 'unpaid'" class="badge badge-warning">
+                                            Non payé
+                                        </span>
+                                        <span t-if="echeance.payment_status == 'late'" class="badge badge-danger">
+                                            En retard
+                                        </span>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </div>
+            </t>
+        </template>
+
+         Template pour afficher l'historique des paiements sur le portail 
+        <template id="portal_my_fiscal_payments" name="Mes Paiements Fiscaux">
+            <t t-call="website.layout">
+                <div class="container mt16 mb16">
+                    <h2 class="text-center">Mon Historique de Paiement</h2>
+                    <table class="table table-striped mt32">
+                        <thead>
+                            <tr>
+                                <th>Référence Paiement</th>
+                                <th>Montant</th>
+                                <th>Date de Paiement</th>
+                                <th>Statut</th>
+                                <th>Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="fiscal_payments" t-as="payment">
+                                <tr>
+                                    <td><t t-esc="payment.name"/></td>
+                                    <td><t t-esc="payment.amount"/></td>
+                                    <td><t t-esc="payment.payment_date"/></td>
+                                    <td>
+                                        <span t-if="payment.state == 'done'" class="badge badge-success">
+                                            Payé
+                                        </span>
+                                        <span t-if="payment.state == 'draft'" class="badge badge-warning">
+                                            En attente
+                                        </span>
+                                        <span t-if="payment.state == 'cancel'" class="badge badge-danger">
+                                            Annulé
+                                        </span>
+                                    </td>
+                                    <td><t t-esc="payment.notes or 'Aucune'"/></td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </div>
+            </t>
+        </template>
+
+    </data>
+</odoo> -->

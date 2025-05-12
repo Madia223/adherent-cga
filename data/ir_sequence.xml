@@ -1,0 +1,8 @@
+<record id="seq_fiscal_payment" model="ir.sequence">
+    <field name="name">Paiement Fiscal</field>
+    <field name="code">fiscal.payment</field>
+    <field name="prefix">PAY/</field>
+    <field name="padding">4</field>
+    <field name="number_next">1</field>
+    <field name="number_increment">1</field>
+</record>

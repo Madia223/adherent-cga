@@ -25,7 +25,7 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base', 'calendar'],
+    'depends': ['base', 'calendar', 'portal','mail',],
 
     # always loaded
     'data': [
@@ -40,6 +40,13 @@
 
         'data/fiscal_data.xml',
 
+
+        'data/mail_templates.xml',
+        'views/portal_templates.xml',
+        'views/fiscal_echeance.xml',
+        'views/notification.xml',
+        'data/fiscal_cron.xml',
+        'views/fiscal_payment.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

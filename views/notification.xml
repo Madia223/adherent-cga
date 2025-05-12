@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data noupdate="0">
+        <!-- Vue formulaire des notifications -->
+        <record id="view_portal_notification_form" model="ir.ui.view">
+            <field name="name">portal_notification_form</field>
+            <field name="model">portal.notification</field>
+            <field name="arch" type="xml">
+                <form string="Notification d'Échéance Fiscale">
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                            <field name="partner_id"/>
+                            <field name="echeance_id"/>
+                            <field name="date_notification"/>
+                            <field name="notification_type"/>
+                            <field name="message"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Vue liste des notifications -->
+        <record id="view_portal_notification_tree" model="ir.ui.view">
+            <field name="name">portal_notification_tree</field>
+            <field name="model">portal.notification</field>
+            <field name="arch" type="xml">
+                <list string="Notifications">
+                    <field name="name"/>
+                    <field name="partner_id"/>
+                    <field name="echeance_id"/>
+                    <field name="date_notification"/>
+                    <field name="notification_type"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Action liée aux notifications -->
+        <record id="action_portal_notification" model="ir.actions.act_window">
+            <field name="name">Notifications</field>
+            <field name="res_model">portal.notification</field>
+            <field name="view_mode">list,form</field>
+        </record>
+
+        <!-- Menu pour accéder aux notifications -->
+        <menuitem id="menu_notifications"
+                  name="Notifications"
+                  parent="menu_adhesion"
+                  sequence="20"
+                  action="action_portal_notification"/>
+
+    </data>
+</odoo>
+
+
+<!-- <?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+
+         Vue formulaire des notifications
+        <record id="view_portal_notification_form" model="ir.ui.view">
+            <field name="name">portal_notification_form</field>
+            <field name="model">portal.notification</field>
+            <field name="arch" type="xml">
+                <form string="Notification d'Échéance Fiscale">
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                            <field name="partner_id"/>
+                            <field name="echeance_id"/>
+                            <field name="date_notification"/>
+                            <field name="notification_type"/>
+                            <field name="message"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+         Vue liste des notifications
+        <record id="view_portal_notification_tree" model="ir.ui.view">
+            <field name="name">portal_notification_tree</field>
+            <field name="model">portal.notification</field>
+            <field name="arch" type="xml">
+                <list string="Notifications">
+                    <field name="name"/>
+                    <field name="partner_id"/>
+                    <field name="echeance_id"/>
+                    <field name="date_notification"/>
+                    <field name="notification_type"/>
+                </list>
+            </field>
+        </record>
+
+        Action liée aux notifications 
+        <record id="action_portal_notification" model="ir.actions.act_window">
+            <field name="name">Notifications</field>
+            <field name="res_model">portal.notification</field>
+            <field name="view_mode">list,form</field>
+        </record>
+
+         Menu pour accéder aux notifications 
+        <menuitem id="menu_notifications"
+                  name="Notifications"
+                  parent="menu_adhesion"
+                  sequence="20"
+                  action="action_portal_notification"/>
+    </data>
+</odoo> -->
