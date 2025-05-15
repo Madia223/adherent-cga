@@ -32,6 +32,7 @@
         'views/fiscal_view.xml',
         'views/templates.xml',
         'data/fiscal_data.xml',
+        'data/email_template.xml',
     ],
     # only loaded in demonstration mode
     'demo': [
