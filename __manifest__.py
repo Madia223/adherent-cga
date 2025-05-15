@@ -33,6 +33,7 @@
         'views/templates.xml',
         'data/fiscal_data.xml',
         'data/email_template.xml',
+        'data/cron_data.xml',
     ],
     # only loaded in demonstration mode
     'demo': [
