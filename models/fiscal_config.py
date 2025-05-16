@@ -1,3 +1,5 @@
+from email.policy import default
+
 from odoo import models, fields, api
 
 class FiscalRegime(models.Model):
@@ -6,6 +8,11 @@ class FiscalRegime(models.Model):
 
     name = fields.Char(string='Nom du Régime', required=True)
     taxe_ids = fields.One2many('fiscal.taxe', 'regime_id', string='Impôts')
+    reminder_days = fields.Integer(
+        string="Seuil de relance (jours)",
+        default=7,
+        help="Nombre de jours de retard avant envoi de relance"
+    )
 
 
 
@@ -49,3 +56,5 @@ class FiscalTaxe(models.Model):
         for taxe in taxes:
             print(f"- {taxe.name} : échéance le {taxe.deadline}")
         return None
+
+

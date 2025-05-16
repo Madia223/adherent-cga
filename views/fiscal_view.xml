@@ -25,5 +25,30 @@
       </field>
     </record>
 
+    <record id="view_fiscal_regime_form" model="ir.ui.view">
+      <field name="name">fiscal_regie.form</field>
+      <field name="model">fiscal.regime</field>
+      <field name="arch" type="xml">
+        <form>
+          <sheet>
+            <group>
+              <field name="name"/>
+              <field name="reminder_days"/>
+            </group>
+            <notebook>
+              <page string="Impôts">
+                <field name="taxe_ids">
+                  <list editable="bottom">
+                    <field name="name"/>
+                    <field name="deadline"/>
+                  </list>
+                </field>
+              </page>
+            </notebook>
+          </sheet>
+        </form>
+      </field>
+    </record>
+
   </data>
 </odoo>

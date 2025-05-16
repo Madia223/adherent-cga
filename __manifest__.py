@@ -31,6 +31,8 @@
         'views/adherant.xml',
         'views/fiscal_view.xml',
         'views/templates.xml',
+        'views/paiement_views.xml',
+        'data/paiement_data.xml',
         'data/fiscal_data.xml',
         'data/cron.xml',
         'data/action_server.xml',

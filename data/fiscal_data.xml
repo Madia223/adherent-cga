@@ -103,5 +103,23 @@
             <field name="deadline">2025-10-31</field>
             <field name="regime_id" ref="regime_fiscal_non_professionnels"/>
         </record>
+
+<!--        <record id="email_template_late_payment" model="mail.template">-->
+<!--            <field name="name">Relance pour paiement en retard</field>-->
+<!--            <field name="model_id" ref="model_echeance"/>-->
+<!--            <field name="email_from">${object.company_id.email or 'noreply@example.com'}</field>-->
+<!--            <field name="email_to">${object.adherent_id.email}</field>-->
+<!--            <field name="subject">Relance pour paiement en retard - ${object.obligation.name}</field>-->
+<!--            <field name="body_html"><![CDATA[-->
+<!--        <p>Bonjour ${object.adherent_id.name},</p>-->
+<!--        <p>Nous vous informons que le paiement de ${object.obligation.name}-->
+<!--        qui était dû le ${object.date_echeance} est en retard de ${object.days_late} jours.</p>-->
+<!--        <p>Merci de régulariser votre situation au plus vite.</p>-->
+<!--        <p>Cordialement,</p>-->
+<!--        <p>L'équipe CGA</p>-->
+<!--               ]]>-->
+<!--            </field>-->
+<!--        </record>-->
+
     </data>
 </odoo>

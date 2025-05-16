@@ -1,0 +1,81 @@
+<odoo>
+    <data>
+        <record id="echeance_list_view" model="ir.ui.view">
+            <field name="name">echeance.list</field>
+            <field name="model">echeance</field>
+            <field name="arch" type="xml">
+                <list>
+                    <field name="adherent_id"/>
+                    <field name="obligation"/>
+                    <field name="state"/>
+                    <field name="date_echeance"/>
+                    <field name="days_late"/>
+                </list>
+            </field>
+        </record>
+
+
+        <record id="echeance_form_view" model="ir.ui.view">
+            <field name="name">echeance.form</field>
+            <field name="model">echeance</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <field name="adherent_id"/>
+                        <field name="regime_id" readonly="1"/>
+                        <field name="obligation" domain="[('regime_id', '=', regime_id)]"/>
+                        <field name="state" readonly="1"/>
+                        <field name="date_echeance" readonly="1"/>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+
+        <record id="echeance_kanban_view" model="ir.ui.view">
+            <field name="name">echeance.kanban</field>
+            <field name="model">echeance</field>
+            <field name="arch" type="xml">
+                <kanban default_group_by="state">
+                    <field name="state"/>
+                    <field name="adherent_id"/>
+                    <field name="obligation"/>
+                    <field name="date_echeance"/>
+                    <field name="days_late"/>
+
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div t-attf-class="oe_kanban_global_click oe_kanban_card
+                                    #{record.state.raw_value === 'to_pay' ? 'oe_kanban_color_2' :''}
+                                    #{record.state.raw_value === 'paid' ? 'oe_kanban_color_5' :''}
+                                    #{record.state.raw_value === 'late' ? 'oe_kanban_color_1' :''}">
+
+                            </div>
+                            <div class="oe_kanban_global_click">
+                                <div class="o_kanban_record_top">
+                                    <div class="o_kanban_record_title">
+                                        <field name="adherent_id" widget="many2one_avatar"/>
+                                        <field name="obligation"/>
+                                    </div>
+                                </div>
+                                <div class="o_kanban_record_body">
+                                    <div>
+                                        <span>Échéance: </span>
+                                        <field name="date_echeance"/>
+                                    </div>
+                                    <div t-if="record.days_late.raw_value > 0">
+                                        <span>Retard: </span>
+                                        <field name="days_late"/> jours
+                                    </div>
+                                </div>
+                                <div class="oe_kanban_footer">
+                                    <field name="state" widget="selection_badge"/>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+    </data>
+</odoo>

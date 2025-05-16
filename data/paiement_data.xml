@@ -1,0 +1,12 @@
+<odoo>
+    <data noupdate="1">
+        <!-- Séquence pour les références de paiement-->
+        <record id="seq_paiement" model="ir.sequence">
+            <field name="name">Sequence Paiement</field>
+            <field name="code">paiement.seq</field>
+            <field name="prefix">PAY/%(year)s/</field>
+            <field name="padding">4</field>
+            <field name="company_id" eval="False"/>
+        </record>
+    </data>
+</odoo>
