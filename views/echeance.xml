@@ -20,12 +20,28 @@
             <field name="model">echeance</field>
             <field name="arch" type="xml">
                 <form>
+                    <header>
+                        <button name="check_expired_echeance"
+                                string="Mettre à jour le status"
+                                type="object"
+                                class="btn-primary"
+                                icon="fa-refresh"/>
+                    </header>
                     <sheet>
+                      <group>
+
+                        <group>
                         <field name="adherent_id"/>
-                        <field name="regime_id" readonly="1"/>
                         <field name="obligation" domain="[('regime_id', '=', regime_id)]"/>
-                        <field name="state" readonly="1"/>
                         <field name="date_echeance" readonly="1"/>
+                        </group>
+                        <group>
+                        <field name="regime_id" readonly="1"/>
+                        <field name="state" readonly="1"/>
+                        <field name="days_late" readonly="1"/>
+                        </group>
+
+                      </group>
                     </sheet>
                 </form>
             </field>
@@ -79,3 +95,4 @@
         </record>
     </data>
 </odoo>
+

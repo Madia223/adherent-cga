@@ -137,6 +137,10 @@ class Echeance(models.Model):
                 rec.state = 'to_pay'
                 rec.days_late = 0
 
+            elif rec.date_echeance and rec.date_echeance < today: # (si la date d'échéance est définie et que la date d'échéance est inférieure à la date d'aujourd'hui)
+                rec.state = 'late'
+                rec.days_late = (today - rec.date_echeance).days
+
 
 
     # @api.constrains('date_echeance', 'state')

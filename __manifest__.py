@@ -29,6 +29,7 @@
         'security/ir.model.access.csv',
         'views/views.xml',
         'views/adherant.xml',
+        'views/echeance.xml',
         'views/fiscal_view.xml',
         'views/templates.xml',
         'views/paiement_views.xml',
