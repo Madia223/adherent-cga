@@ -23,6 +23,20 @@ class Adherant(models.Model):
                                readonly=True)
     deadline = fields.Date(string="Échéance", compute="_compute_deadline", readonly=True)
     is_adherent = fields.Boolean("Est un adhérent", default=False, required=True)
+    echeance_ids = fields.One2many('echeance', 'adherent_id', string="Échéances")
+    all_echeances_paid = fields.Boolean("Toutes les échéances payées", compute='_compute_all_echeances_paid', store=True)
+
+
+    @api.depends('echeance_ids.state')
+    def _compute_all_echeances_paid(self):
+        for adherent in self:
+            if adherent.is_adherent and adherent.echeance_ids:
+                adherent.all_echeances_paid = all(
+                    echeance.state == 'paid'
+                    for echeance in adherent.echeance_ids
+                )
+            else:
+                adherent.all_echeances_paid = False
 
 
     @api.depends('regime_id')
@@ -34,6 +48,49 @@ class Adherant(models.Model):
     def _compute_deadline(self):
         for rec in self:
             rec.deadline = rec.regime_id.taxe_ids and rec.regime_id.taxe_ids[0].deadline or False
+
+
+    @api.model
+    def create(self, vals):
+        # Création de l'adhérent
+        adherent = super(Adherant, self).create(vals)
+
+        # Si c'est un adhérent et qu'un régime est défini, créer les échéances
+        if vals.get('is_adherent') and vals.get('regime_id'):
+            adherent._create_echeances()
+
+        return adherent
+
+    def write(self, vals):
+        res = super(Adherant, self).write(vals)
+
+        # Si is_adherent devient True ou si le régime est modifié
+        if 'is_adherent' in vals or 'regime_id' in vals:
+            for adherent in self:
+                if adherent.is_adherent and adherent.regime_id:
+                    # Supprimer les anciennes échéances
+                    adherent.echeance_ids.unlink()
+                    # Créer les nouvelles échéances
+                    adherent._create_echeances()
+
+        return res
+
+    def _create_echeances(self):
+        """Crée automatiquement les échéances pour les obligations fiscales de l'adhérent"""
+
+        Echeance = self.env['echeance']
+
+        for adherent in self:
+            if adherent.is_adherent and adherent.regime_id:
+                for taxe in adherent.regime_id.taxe_ids:
+                    Echeance.create({
+                        'adherent_id' : adherent.id,
+                        'regime_id' : adherent.regime_id.id,
+                        'obligation' : taxe.id,
+                        'state' : 'to_pay',
+                    })
+        _logger.info(f"Échéances créées automatiquement pour l'adhérent {self.id}")
+
 
 class Echeance(models.Model):
     _name = "echeance"
@@ -70,6 +127,16 @@ class Echeance(models.Model):
 #             self.check_expired_echeance()
 #         return res
 
+# Affichage de la date, du nom et de l'etat de l'échéance
+    def name_get(self):
+        result = []
+        for echeance in self:
+            # Format: "Date d'échéance - Obligation [État]"
+            name = f"{echeance.date_echeance} - {echeance.obligation.name} [{echeance.state}]"
+            result.append((echeance.id, name))
+
+        return result
+
 
 #filtrage des obligations en fonction de leur régime
     @api.onchange('adherent_id')
@@ -91,7 +158,6 @@ class Echeance(models.Model):
 
 
 #Vérification et mise à jour de L'Etat en fonction de la date d'échéance
-    @api.model
     def check_expired_echeance(self):
         _logger.info("=== DÉBUT check_expired_echeances ===")
         today = fields.Date.today()
@@ -140,6 +206,9 @@ class Echeance(models.Model):
             elif rec.date_echeance and rec.date_echeance < today: # (si la date d'échéance est définie et que la date d'échéance est inférieure à la date d'aujourd'hui)
                 rec.state = 'late'
                 rec.days_late = (today - rec.date_echeance).days
+
+
+
 
 
 

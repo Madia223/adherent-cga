@@ -32,12 +32,14 @@ class Paiement(models.Model):
     def create(self, vals):
         paiement = super(Paiement, self).create(vals)
         paiement.update_echeance_state()
+        paiement.check_all_echeances_paid()
         return paiement
 
     def write(self, vals):
         res = super(Paiement, self).write(vals)
         if 'est_valide' in vals:
             self.update_echeance_state()
+            self.check_all_echeances_paid()
         return res
 
     def update_echeance_state(self):
@@ -48,5 +50,20 @@ class Paiement(models.Model):
                 # Vérifie si l'échéance est dépassée
                 if rec.echeance_id.date_echeance < date.today():
                     rec.echeance_id.state = 'late'
+
+
+    def check_all_echeances_paid(self):
+        """Vérifie si toutes les échéances de l'adhérent sont payées"""
+        for rec in self:
+            adherent = rec.adherent_id
+            if adherent.is_adherent:
+                echeances = self.env['echeance'].search([
+                    ('adherent_id', '=', adherent.id),
+                    ('state', '!=', 'paid')
+                ])
+                if not echeances:
+                    adherent.all_echeances_paid = True
+                else:
+                    adherent.all_echeances_paid = False
 
 

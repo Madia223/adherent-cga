@@ -5,6 +5,13 @@
             <field name="model">echeance</field>
             <field name="arch" type="xml">
                 <list>
+                    <header>
+                        <button name="check_expired_echeance"
+                                string="Mettre à jour les status"
+                                type="object"
+                                class="btn-primary"
+                                icon="fa-refresh"/>
+                    </header>
                     <field name="adherent_id"/>
                     <field name="obligation"/>
                     <field name="state"/>
@@ -22,7 +29,7 @@
                 <form>
                     <header>
                         <button name="check_expired_echeance"
-                                string="Mettre à jour le status"
+                                string="Mettre à jour les status"
                                 type="object"
                                 class="btn-primary"
                                 icon="fa-refresh"/>
@@ -53,6 +60,13 @@
             <field name="model">echeance</field>
             <field name="arch" type="xml">
                 <kanban default_group_by="state">
+                    <header>
+                        <button name="check_expired_echeance"
+                                string="Mettre à jour les status"
+                                type="object"
+                                class="btn-primary"
+                                icon="fa-refresh"/>
+                    </header>
                     <field name="state"/>
                     <field name="adherent_id"/>
                     <field name="obligation"/>
