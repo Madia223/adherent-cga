@@ -108,36 +108,6 @@ class Echeance(models.Model):
     days_late = fields.Integer("Jours de retard", compute='_compute_days_late', store=True)
 
 
-# Lancement du cron à chaque sauvegarde
-#     @api.model
-#     def create(self, vals_list):
-#         records = super().create(vals_list)
-#         # Déclancher après création
-#         self.check_expired_echeance()
-#         return records
-#
-#
-#     def write(self, vals):
-#         if self.env.context.get('check_already_done'):
-#             return super().write(vals)
-#         res = super().write(vals)
-#         self.with_context(check_already_done=True).check_expired_echeance()
-#         # Déclencher après modification
-#         if 'date_echeance' in vals or 'state' in vals:
-#             self.check_expired_echeance()
-#         return res
-
-# Affichage de la date, du nom et de l'etat de l'échéance
-    def name_get(self):
-        result = []
-        for echeance in self:
-            # Format: "Date d'échéance - Obligation [État]"
-            name = f"{echeance.date_echeance} - {echeance.obligation.name} [{echeance.state}]"
-            result.append((echeance.id, name))
-
-        return result
-
-
 #filtrage des obligations en fonction de leur régime
     @api.onchange('adherent_id')
     def _onchange_adherent_id(self):
