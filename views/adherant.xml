@@ -22,7 +22,6 @@
             </xpath>
         </field>
     </record>
-
     <!-- vue calendrier -->
     <record id="view_fiscal_taxe_calendar" model="ir.ui.view">
         <field name="name">fiscal.taxe.calendar</field>
@@ -37,5 +36,4 @@
             </calendar>
         </field>
     </record>
-
 </odoo>

@@ -1,54 +1,108 @@
 <odoo>
-  <data>
+    <data>
 
-    <record id="view_fiscal_regime_form" model="ir.ui.view">
-      <field name="name">fiscal.regime.form</field>
-      <field name="model">fiscal.regime</field>
-      <field name="arch" type="xml">
-        <form>
-          <sheet>
-            <group>
-              <field name="name"/>
-            </group>
-            <notebook>
-              <page string="Impôts">
-                <field name="taxe_ids">
-                  <list editable="bottom">
+        <record id="view_fiscal_regime_form" model="ir.ui.view">
+            <field name="name">fiscal.regime.form</field>
+            <field name="model">fiscal.regime</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                        </group>
+                        <notebook>
+                            <page string="Impôts">
+                                <field name="taxe_ids">
+                                    <list editable="bottom">
+                                        <field name="name"/>
+                                        <field name="deadline"/>
+                                    </list>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_fiscal_regime_form" model="ir.ui.view">
+            <field name="name">fiscal_regime.form</field>
+            <field name="model">fiscal.regime</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                            <field name="reminder_days"/>
+                        </group>
+                        <notebook>
+                            <page string="Impôts">
+                                <field name="taxe_ids">
+                                    <list editable="bottom">
+                                        <field name="name"/>
+                                        <field name="deadline"/>
+                                    </list>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_fiscal_taxe_kanban" model="ir.ui.view">
+            <field name="name">fiscal.taxe.kanban</field>
+            <field name="model">fiscal.taxe</field>
+            <field name="arch" type="xml">
+                <kanban class="o_kanban_small_column" default_group_by="regime_id">
                     <field name="name"/>
                     <field name="deadline"/>
-                  </list>
-                </field>
-              </page>
-            </notebook>
-          </sheet>
-        </form>
-      </field>
-    </record>
+                    <field name="regime_id"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div class="o_kanban_record">
+                                <strong>
+                                    <field name="name"/>
+                                </strong>
+                                <br/>
+                                <span>Échéance :
+                                    <field name="deadline"/>
+                                </span>
+                                <br/>
+                                <span>Régime :
+                                    <field name="regime_id"/>
+                                </span>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
 
-    <record id="view_fiscal_regime_form" model="ir.ui.view">
-      <field name="name">fiscal_regie.form</field>
-      <field name="model">fiscal.regime</field>
-      <field name="arch" type="xml">
-        <form>
-          <sheet>
-            <group>
-              <field name="name"/>
-              <field name="reminder_days"/>
-            </group>
-            <notebook>
-              <page string="Impôts">
-                <field name="taxe_ids">
-                  <list editable="bottom">
-                    <field name="name"/>
-                    <field name="deadline"/>
-                  </list>
-                </field>
-              </page>
-            </notebook>
-          </sheet>
-        </form>
-      </field>
-    </record>
+      <record id="view_fiscal_taxe_tree" model="ir.ui.view">
+    <field name="name">fiscal.taxe.tree</field>
+    <field name="model">fiscal.taxe</field>
+    <field name="arch" type="xml">
+        <list default_group_by="regime_id">
+            <field name="name"/>
+            <field name="deadline"/>
+            <field name="regime_id"/>
+        </list>
+    </field>
+</record>
 
-  </data>
+      <record id="view_fiscal_taxe_search" model="ir.ui.view">
+    <field name="name">fiscal.taxe.search</field>
+    <field name="model">fiscal.taxe</field>
+    <field name="arch" type="xml">
+        <search>
+            <field name="name" string="Nom de l'impôt"/>
+            <filter string="Par Régime" name="filter_by_regime" domain="[('regime_id','!=',False)]"/>
+            <field name="regime_id"/>
+        </search>
+    </field>
+</record>
+
+
+    </data>
 </odoo>

@@ -2,6 +2,7 @@ from email.policy import default
 
 from odoo import models, fields, api
 
+
 class FiscalRegime(models.Model):
     _name = 'fiscal.regime'
     _description = 'Régime Fiscal'
@@ -14,8 +15,6 @@ class FiscalRegime(models.Model):
         help="Nombre de jours de retard avant envoi de relance"
     )
 
-
-
     def Afficher_Echeances(self):
         regimes = self.search([])
         echeances = []
@@ -27,7 +26,7 @@ class FiscalRegime(models.Model):
                     'impot': taxe.name,
                     'echeance': taxe.deadline,
                 })
-        #Afficher dans la console
+        # Afficher dans la console
         print("==== Liste des echeances fiscales ====")
         for e in echeances:
             print(f"Régime: {e['regime']} | impôt: {e['impot']} | echeance: {e['echeance']}")
@@ -56,5 +55,3 @@ class FiscalTaxe(models.Model):
         for taxe in taxes:
             print(f"- {taxe.name} : échéance le {taxe.deadline}")
         return None
-
-

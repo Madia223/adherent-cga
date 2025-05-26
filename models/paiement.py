@@ -1,11 +1,12 @@
 from odoo import models, fields, api
 from datetime import date
 
+
 class Paiement(models.Model):
     _name = "paiement"
     _description = "Suivi des paiements des adhérents"
 
-    #Champs de base
+    # Champs de base
     name = fields.Char("Référence", readonly=True, default=lambda self: self.env['ir.sequence'].
                        next_by_code('paiement.seq'))
     adherent_id = fields.Many2one('res.partner', string="Adhérent", domain=[('is_adherent', '=', True)], required=True)
@@ -13,7 +14,8 @@ class Paiement(models.Model):
     montant = fields.Float("Montant payé", required=True)
     date_paiement = fields.Date("Date de paiement", default=fields.Date.today(), required=True)
     mode_paiement = fields.Selection("payment_mode", string="Mode de paiement", required=True)
-    def payment_mode (self):
+
+    def payment_mode(self):
         return [
             ('espece', 'Espèces'),
             ('cheque', 'Chèque'),
@@ -21,13 +23,13 @@ class Paiement(models.Model):
             ('mobile', 'Paiement mobile')
         ]
 
-    #Contrôle de validité
+    # Contrôle de validité
     est_valide = fields.Boolean('Paiement validé', default=False)
 
-    #Relation avec la taxe
+    # Relation avec la taxe
     taxe_id = fields.Many2one(related='echeance_id.obligation', string='Taxe/Obligation', readonly=True)
 
-    #Changement d'état automatique
+    # Changement d'état automatique
     @api.model
     def create(self, vals):
         paiement = super(Paiement, self).create(vals)
@@ -51,7 +53,6 @@ class Paiement(models.Model):
                 if rec.echeance_id.date_echeance < date.today():
                     rec.echeance_id.state = 'late'
 
-
     def check_all_echeances_paid(self):
         """Vérifie si toutes les échéances de l'adhérent sont payées"""
         for rec in self:
@@ -65,5 +66,3 @@ class Paiement(models.Model):
                     adherent.all_echeances_paid = True
                 else:
                     adherent.all_echeances_paid = False
-
-

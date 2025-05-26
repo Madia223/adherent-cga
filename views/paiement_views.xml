@@ -22,8 +22,10 @@
                 <sheet>
                     <group>
                         <field name="name" readonly="1"/>
-                        <field name="adherent_id" domain="[('is_adherent', '=', True), ('all_echeances_paid', '=', False)]"/>
-                        <field name="echeance_id" domain="[('adherent_id', '=', adherent_id),('state','in',['to_pay','late'])]"/>
+                        <field name="adherent_id"
+                               domain="[('is_adherent', '=', True), ('all_echeances_paid', '=', False)]"/>
+                        <field name="echeance_id"
+                               domain="[('adherent_id', '=', adherent_id),('state','in',['to_pay','late'])]"/>
                         <field name="taxe_id" readonly="1"/>
                         <field name="montant"/>
                         <field name="date_paiement"/>

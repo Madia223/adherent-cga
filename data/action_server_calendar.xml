@@ -3,10 +3,11 @@
         <field name="name">Afficher Échéances Console</field>
         <field name="model_id" ref="model_fiscal_taxe"/>
         <field name="binding_model_id" ref="model_fiscal_taxe"/>
-        <field name="binding_view_types">calendar</field> <!-- Important : pour que l'action apparaisse dans la vue calendrier -->
+        <field name="binding_view_types">calendar
+        </field> <!-- Important : pour que l'action apparaisse dans la vue calendrier -->
         <field name="state">code</field>
         <field name="code">
-records.afficher_echeances_console()
+            records.afficher_echeances_console()
         </field>
     </record>
 </odoo>
