@@ -1,3 +1,3 @@
 # -*- coding: utf-8 -*-
 
-from . import CheckController
+from . import CheckController, portal

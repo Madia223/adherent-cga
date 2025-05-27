@@ -1,0 +1,22 @@
+<odoo>
+  <record id="mail_template_relance" model="mail.template">
+    <field name="name">Rappel Échéance Fiscale</field>
+    <field name="model_id" ref="model_echeance"/>
+    <field name="email_from">${(user.company_id.email or 'noreply@example.com')|safe}</field>
+    <field name="email_to">${object.adherent_id.email|safe}</field>
+    <field name="subject">Rappel : Échéance fiscale - ${object.obligation_id.name}</field>
+    <field name="body_html">
+      <![CDATA[
+        <p>Bonjour ${object.adherent_id.name},</p>
+        <p>Ce message est un rappel concernant l'échéance suivante :</p>
+        <ul>
+            <li><strong>Impôt :</strong> ${object.obligation_id.name}</li>
+            <li><strong>Date limite :</strong> ${object.date_echeance}</li>
+        </ul>
+        <p>Merci de bien vouloir effectuer le paiement avant la date limite.</p>
+        <p>Cordialement,</p>
+        <p>L'équipe CGA</p>
+      ]]>
+    </field>
+  </record>
+</odoo>

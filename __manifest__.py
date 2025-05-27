@@ -22,7 +22,7 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base', 'calendar', 'mail'],
+    'depends': ['base', 'calendar', 'mail', 'portal', 'website', ],
 
     # always loaded
     'data': [
@@ -37,6 +37,14 @@
         'data/cron.xml',
         'data/action_server.xml',
         'data/action_server_calendar.xml',
+
+
+        'data/mail_templates.xml',
+        'views/portal_templates.xml',
+    ],
+
+    'qweb': [
+    'static/src/xml/portal_templates.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

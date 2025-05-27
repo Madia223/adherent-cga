@@ -52,12 +52,12 @@
         </record>
 
 
-        <menuitem id="menu_cga_root" name="CGA" sequence="10"/>
+       <menuitem id="menu_cga_root" name="CGA" sequence="10" parent="sale_subscription.menu_sale_subscription_root"/>
         <menuitem id="menu_config" name="Paramètres" sequence="20" parent="menu_cga_root"/>
         <menuitem id="menu_echeance_fiscale" name="Échéance" sequence="20" parent="menu_cga_root"/>
         <menuitem id="menu_fiscal_regime" name="Régimes Fiscaux" parent="menu_config" action="action_fiscal_regime"
                   sequence="10"/>
-        <menuitem id="menu_fiscal_tqxe" name="Obligations" parent="menu_config" action="action_fiscal_taxe"
+        <menuitem id="menu_fiscal_taxe" name="Obligations" parent="menu_config" action="action_fiscal_taxe"
                   sequence="10"/>
         <menuitem id="menu_adhesion" name="Adhesion CGA" parent="menu_cga_root" sequence="10"/>
         <menuitem id="menu_adherent" name="Dossier Adherent" parent="menu_adhesion" action="action_adherant"

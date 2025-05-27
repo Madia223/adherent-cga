@@ -1,0 +1,36 @@
+<odoo>
+  <template id="portal_echeance_page" name="Mes Échéances" inherit_id="portal.portal_my_home" priority="20">
+    <xpath expr="//div[@class='o_portal_my_home']" position="inside">
+      <div class="oe_structure">
+        <h2>Agenda Fiscal</h2>
+        <t t-if="echeances">
+          <table class="table table-sm">
+            <thead>
+              <tr>
+                <th>Impôt</th>
+                <th>Échéance</th>
+                <th>Statut</th>
+              </tr>
+            </thead>
+            <tbody>
+              <t t-foreach="echeances" t-as="echeance">
+                <tr>
+                  <td><t t-esc="echeance.obligation.name"/></td>
+                  <td><t t-esc="echeance.date_echeance.strftime('%d/%m/%Y')"/></td>
+                  <td>
+                    <t t-if="echeance.state == 'paid'">Payé</t>
+                    <t t-elif="echeance.state == 'late'">En Retard</t>
+                    <t t-else="1">À venir</t>
+                  </td>
+                </tr>
+              </t>
+            </tbody>
+          </table>
+        </t>
+        <t t-else="1">
+          <p>Vous n’avez aucune échéance fiscale enregistrée.</p>
+        </t>
+      </div>
+    </xpath>
+  </template>
+</odoo>

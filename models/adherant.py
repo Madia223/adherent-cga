@@ -2,7 +2,6 @@ from datetime import timedelta, date
 from email.policy import default
 import logging
 
-import self
 from dateutil.utils import today
 
 _logger = logging.getLogger(__name__)
