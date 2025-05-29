@@ -2,31 +2,64 @@
     <data noupdate="1">
         <record id="mail_template_adherent_cga" model="mail.template">
             <field name="name">Email adherent cga</field>
-            <field name="model_id" ref="base.model_res_partner"/>
+            <field name="model_id" ref="adherent-cga.model_echeance"/>
             <field name="subject">Rappel échéance fiscale</field>
             <field name="email_from">{{ user.email_formatted or '' }}</field>
-            <field name="email_to">{{ object.email or '' }}</field>
+            <field name="email_to">{{ object.adherent_id.email or 'no-reply@inov.cm' }}</field>
+            <field name="reply_to">{{ object.adherent_id.email or 'no-reply@inov.cm' }}</field>
             <field name="description">Rappel de vos échéances fiscales pour le mois en cours</field>
             <field name="body_html" type="html">
                 <div>
-                    <p>Bonjour <t t-esc="object.name or 'cher adhérent'"/>,
+                    <p>Bonjour
+                        <t t-esc="object.adherent_id.name or 'cher adhérent'"/>
+                        ,
                     </p>
                     <p>Nous vous rappelons vos échéances fiscales pour le mois en cours :</p>
-                    <t t-if="object.current_month_deadlines">
-                        <ul>
-                            <li t-foreach="object.current_month_deadlines" t-as="echeance">
-                                <strong>
-                                    <t t-esc="echeance.name"/>
-                                </strong>
-                                :
-                                <t t-esc="echeance.deadline"/>
-                            </li>
-                        </ul>
-                    </t>
-                    <t t-else="">
-                        <p>Aucune échéance prévue pour ce mois.</p>
-                    </t>
+                    <ul>
+                        <li>
+                            <strong>
+                                <t t-esc="object.obligation.name"/>
+                            </strong>
+                            :
+                            <t t-esc="object.date_echeance"/>
+                        </li>
+                    </ul>
                     <p>Merci de votre attention.</p>
+                    <p>Cordialement,</p>
+                    <p>Votre équipe CGA</p>
+                </div>
+            </field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+
+        <record id="late_mail_template_adherent_cga" model="mail.template">
+            <field name="name">Email retard échéance fiscale</field>
+            <field name="model_id" ref="adherent-cga.model_echeance"/>
+            <field name="subject">Rappel : Échéance fiscale en retard</field>
+            <field name="email_from">{{ user.email_formatted or '' }}</field>
+            <field name="email_to">{{ object.adherent_id.email or 'no-reply@inov.cm' }}</field>
+            <field name="reply_to">{{ object.adherent_id.email or 'no-reply@inov.cm' }}</field>
+            <field name="description">Notification de retard d’échéance fiscale</field>
+            <field name="body_html" type="html">
+                <div>
+                    <p>Bonjour
+                        <t t-esc="object.adherent_id.name or 'cher adhérent'"/>
+                        ,
+                    </p>
+                    <p>Nous vous informons que l'échéance fiscale suivante est en <strong>retard</strong> :
+                    </p>
+                    <ul>
+                        <li>
+                            <strong>
+                                <t t-esc="object.obligation.name"/>
+                            </strong>
+                            :
+                            prévue le
+                            <t t-esc="object.date_echeance"/>
+                        </li>
+                    </ul>
+                    <p>Nous vous prions de bien vouloir régulariser cette situation dans les plus brefs délais.</p>
+                    <p>Merci de votre compréhension.</p>
                     <p>Cordialement,</p>
                     <p>Votre équipe CGA</p>
                 </div>

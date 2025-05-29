@@ -1,0 +1,37 @@
+<odoo>
+    <record id="paiement_list_view" model="ir.ui.view">
+        <field name="name">paiement.list</field>
+        <field name="model">paiement</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="adherent_id"/>
+                <field name="echeance_id"/>
+                <field name="montant"/>
+                <field name="date_paiement"/>
+                <field name="est_valide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="paiement_form_view" model="ir.ui.view">
+        <field name="name">paiement.form</field>
+        <field name="model">paiement</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="name" readonly="1"/>
+                        <field name="adherent_id" domain="[('is_adherent', '=', True), ('all_echeances_paid', '=', False)]"/>
+                        <field name="echeance_id" domain="[('adherent_id', '=', adherent_id),('state','in',['to_pay','late'])]"/>
+                        <field name="taxe_id" readonly="1"/>
+                        <field name="montant"/>
+                        <field name="date_paiement"/>
+                        <field name="mode_paiement"/>
+                        <field name="est_valide"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+</odoo>

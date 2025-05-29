@@ -13,11 +13,24 @@
             <field name="view_mode">list,form</field>
         </record>
 
+        <record id="action_echeance" model="ir.actions.act_window">
+            <field name="name">Echeance</field>
+            <field name="res_model">echeance</field>
+            <field name="view_mode">kanban,list,form</field>
+        </record>
+
+        <record id="action_paiement" model="ir.actions.act_window">
+            <field name="name">Paiements</field>
+            <field name="res_model">paiement</field>
+            <field name="view_mode">list,form</field>
+        </record>
+
         <record id="action_adherant" model="ir.actions.act_window">
             <field name="name">adherant</field>
             <field name="res_model">res.partner</field>
             <field name="view_mode">list,form</field>
         </record>
+
 
         <record id="action_fiscal_echeance_calendar" model="ir.actions.act_window">
             <field name="name">Calendrier des Échéances Fiscale</field>
@@ -25,8 +38,23 @@
             <field name="view_mode">calendar,list,form</field>
         </record>
 
-        <menuitem id="menu_cga_root" name="CGA" sequence="10"/>
+        <!--        Action serveur -->
+        <record id="action_afficher_echeances_console" model="ir.actions.server">
+            <field name="name">Afficher les Échéances</field>
+            <field name="model_id" ref="model_fiscal_taxe"/>
+            <field name="binding_model_id" ref="model_fiscal_taxe"/>
+            <field name="binding_type">action</field>
+            <field name="binding_view_types">calendar</field> <!-- Très important pour le menu roue dentée -->
+            <field name="state">code</field>
+            <field name="code">
+                action = env['fiscal.regime'].afficher_echeances()
+            </field>
+        </record>
+
+
+        <menuitem id="menu_cga_root" name="CGA" sequence="10" parent="sale_subscription.menu_sale_subscription_root"/>
         <menuitem id="menu_config" name="Paramètres" sequence="20" parent="menu_cga_root"/>
+        <menuitem id="menu_echeance_fiscale" name="Échéance" sequence="20" parent="menu_cga_root"/>
         <menuitem id="menu_fiscal_regime" name="Régimes Fiscaux" parent="menu_config" action="action_fiscal_regime"
                   sequence="10"/>
         <menuitem id="menu_fiscal_tqxe" name="Obligations" parent="menu_config" action="action_fiscal_taxe"
@@ -34,8 +62,15 @@
         <menuitem id="menu_adhesion" name="Adhesion CGA" parent="menu_cga_root" sequence="10"/>
         <menuitem id="menu_adherent" name="Dossier Adherent" parent="menu_adhesion" action="action_adherant"
                   sequence="10"/>
-        <menuitem id="menu_echeance" name="Calendrier des echeances" parent="menu_adhesion" action="action_fiscal_echeance_calendar"
-                  sequence="10" />
+        <menuitem id="menu_echeance_calendar" name="Calendrier des echeances" parent="menu_echeance_fiscale"
+                  action="action_fiscal_echeance_calendar"
+                  sequence="10"/>
+        <menuitem id="menu_echeance_list" name="Liste des échéances" parent="menu_echeance_fiscale"
+                  action="action_echeance"
+                  sequence="10"/>
+        <menuitem id="menu_paiement_root" name="Paiements" parent="menu_cga_root" sequence="30"/>
+        <menuitem id="menu_paiement" name="Suivi des Paiements" parent="menu_paiement_root" action="action_paiement"/>
+
         <!-- explicit list view definition -->
         <!--
             <record model="ir.ui.view" id="inovcga.list">
