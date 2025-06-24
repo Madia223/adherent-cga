@@ -1,0 +1,36 @@
+/* Fichier: static/src/css/custom_portal.css */
+
+.o_portal {
+    background-color: #f8ca85;  
+}
+.my-3 {
+    display: none;
+}
+
+
+/* .o_portal .header {
+    background-color: #007bff; 
+    color: #ffffff; 
+}
+
+.o_portal .footer {
+    background-color: #343a40;
+    color: #ffffff; 
+} */
+
+
+/* Cacher le logo existant et ajuster le conteneur 
+.navbar-brand.logo img {
+    display: none;*/ /* Cache l'image du logo existant 
+}
+*/
+/* Ajuster le conteneur du logo pour qu'il n'y ait pas d'espace vide 
+.navbar-brand.logo {
+    background-image: url('/adherent-cga/static/src/img/logocga.png'); Chemin vers votre nouveau logo 
+    background-size: contain; /* Ajuste la taille de l'image 
+    background-repeat: no-repeat; /* Évite la répétition de l'image 
+    width: 200px; /* Largeur du conteneur du logo 
+    height: 50px; /* Hauteur du conteneur du logo 
+    display: inline-block; /* S'assure que le conteneur se comporte comme un bloc en ligne 
+}
+*/

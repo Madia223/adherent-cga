@@ -22,18 +22,23 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base', 'calendar'],
+    'depends': ['base', 'calendar','portal','sale_subscription'],
 
     # always loaded
     'data': [
         'security/ir.model.access.csv',
         'views/views.xml',
         'views/adherent.xml',
+        'views/echeance.xml',
+        'views/paiement_view.xml',
         'views/fiscal_view.xml',
         'views/templates.xml',
+        'data/paiement_data.xml',
         'data/fiscal_data.xml',
         'data/email_template.xml',
         'data/cron_data.xml',
+
+        'views/portal_templates.xml',
     ],
     # only loaded in demonstration mode
     'demo': [
@@ -41,6 +46,15 @@
     ],
     'application' : True,
     'installable' : True,
-    'auto_install' : False
+    'auto_install' : False,
+
+    # Ajout du fichier css pour la customization du portail
+    'assets': {
+    'web.assets_frontend': [
+        'adherent-cga/static/src/css/custom_portal.css',
+    ],
+   
+},
+
 }
 
