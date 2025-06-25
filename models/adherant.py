@@ -97,6 +97,32 @@ class Adherant(models.Model):
         if vals.get('is_adherent') and vals.get('regime_id'):
             adherent._create_echeances()
 
+            # Donne automatiquement accès au portail si email présent
+            if adherent.email:
+                portal_group = self.env.ref('base.group_portal')
+                existing_user = self.env['res.users'].search([('partner_id', '=', adherent.id)], limit=1)
+
+                if not existing_user:
+                    user = self.env['res.users'].create({
+                        'name': adherent.name,
+                        'login': adherent.email,
+                        'email': adherent.email,
+                        'partner_id': adherent.id,
+                        'groups_id': [(6, 0, [portal_group.id])],
+                    })
+                else:
+                    user = existing_user
+                    if portal_group not in existing_user.groups_id:
+                        existing_user.groups_id = [(4, portal_group.id)]
+
+                # Envoi automatique du lien d'activation portail (comme le bouton "réinitialiser mot de passe")
+                try:
+                    if user:
+                        user.action_reset_password()
+                        _logger.info(f"Lien de création de mot de passe envoyé à {adherent.email}")
+                except Exception as e:
+                    _logger.error(f"Erreur lors de l'envoi du lien d'accès portail à {adherent.email} : {e}")
+
         return adherent
 
     def write(self, vals):
@@ -112,6 +138,12 @@ class Adherant(models.Model):
                     adherent._create_echeances()
 
         return res
+
+    def get_portal_url(self):
+        self.ensure_one()
+        # Exemple d'URL vers le portail utilisateur Odoo standard
+        base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
+        return f"{base_url}/my"
 
     def _create_echeances(self):
         """Crée automatiquement les échéances pour les obligations fiscales de l'adhérent"""

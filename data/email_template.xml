@@ -66,5 +66,26 @@
             </field>
             <field name="auto_delete" eval="True"/>
         </record>
+
+
+        <record id="mail_template_portail_adherent" model="mail.template">
+            <field name="name">Bienvenue - Accès au Portail</field>
+            <field name="email_from">{{ user.email_formatted or 'admin@example.com' }}</field>
+            <field name="subject">Bienvenue sur votre portail adhérent</field>
+            <field name="model_id" ref="base.model_res_partner"/>
+            <field name="auto_delete" eval="True"/>
+            <field name="body_html" type="html">
+                <p>Bonjour <t t-esc="object.name"/></p>
+                <p>Votre compte adhérent a été créé avec succès.</p>
+                <p>Vous pouvez accéder à votre espace personnel en cliquant sur le bouton ci-dessous :</p>
+                <p>
+                     <a t-att-href="'%s/web/login' % (request.httprequest.host_url)">Accéder au portail</a>
+                </p>
+                <p>Si vous avez des questions, n'hésitez pas à nous contacter.</p>
+                <p>Merci,</p>
+            </field>
+        </record>
+
+
     </data>
 </odoo>
