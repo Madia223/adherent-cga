@@ -1,8 +1,15 @@
+import base64
 import logging
-from dateutil.relativedelta import relativedelta
 
-from odoo import models, fields, api
+import xlsxwriter
+from dateutil.relativedelta import relativedelta
+from openpyxl.workbook import Workbook
+from datetime import  datetime
+from odoo import models, fields, api, _
 from datetime import date
+import io
+from odoo.exceptions import UserError
+
 _logger = logging.getLogger(__name__)
 
 
@@ -10,7 +17,7 @@ class Adherant(models.Model):
     _inherit = 'res.partner'
 
 
-    raison_Sociale = fields.Char(string='Raison Sociale', required=True)
+    raison_Sociale = fields.Char(string='Sigles', required=True)
     identification_fiscale = fields.Char(string='NUI', required=True)
     regime_id = fields.Many2one('fiscal.regime', string='Régime Fiscal', required=True)
     taxe_ids = fields.One2many('fiscal.taxe', 'regime_id', string='Impôts liés au régime', compute='_compute_taxes',
@@ -24,6 +31,29 @@ class Adherant(models.Model):
     echeance_ids = fields.One2many('echeance', 'adherent_id', string="Échéances")
     all_echeances_paid = fields.Boolean("Toutes les échéances payées", compute='_compute_all_echeances_paid',
                                         store=True)
+    dgi = fields.Boolean("DGI", default=True)
+    ref_paiement = fields.Integer("REF PAIEMENT")
+    num_avis = fields.Char("N° Avis")
+    type_document = fields.Selection([
+        ('quittance', 'QUITTANCE'),
+        ('accuse de paiement', 'ACCUSÉ DE PAIEMENT')
+    ], string="Type Document", required=True)
+    activity_type = fields.Char("Activité(s)", required=True)
+    centre_des_impots = fields.Char("CDI", required=True)
+    date_adhesion = fields.Date("Date d'adhésion", default=fields.Date.today(), required=True);
+    montant_total = fields.Float("Montant total payé", compute='_compute_montant_total', store=True,
+                                  readonly=True,
+                                  help="Somme des paiements validés pour cet adhérent")
+
+
+    @api.depends('echeance_ids.paiement_ids.montant', 'echeance_ids.paiement_ids.est_valide')
+    def _compute_montant_total(self):
+        for adherent in self:
+            paiements_valides = self.env['paiement'].search([
+                ('adherent_id', '=', adherent.id),
+                ('est_valide', '=', True)
+            ])
+            adherent.montant_total = sum(paiement.montant for paiement in paiements_valides)
 
     @api.depends('echeance_ids.state')
     def _compute_all_echeances_paid(self):
@@ -105,6 +135,108 @@ class Adherant(models.Model):
     #     return super(Adherant, self).create(vals)
 
 
+    def export_adherent_excel(self):
+        if not self:
+            raise UserError(_("Veuillez selectionnez au moins 1 adhérent pour exporter"))
+
+        output = io.BytesIO()
+        workbook = xlsxwriter.Workbook(output, {'in_memory': True})
+
+        # Defines styles
+        header_format = workbook.add_format({
+            'bold': True,
+            'align': 'center',
+            'valign': 'vcenter',
+            'bg_color': '#337ab7',
+            'font_color': 'white',
+            'border': 1,
+            'font_size': 12
+        })
+
+        title_format = workbook.add_format({
+            'bold': True,
+            'align': 'center',
+            'valign': 'vcenter',
+            'font_size': 14,
+            'bottom': 2
+        })
+
+        regular_format = workbook.add_format({
+            'border': 1,
+            'text_wrap': True,
+            'font_size': 10
+        })
+
+        # Create worksheet
+        worksheet = workbook.add_worksheet('Contribuables SYNAPEC')
+
+        # Write title
+        worksheet.merge_range('A1:O1', 'FICHIER OFFICIEL DES CONTRIBUABLES SYNAPEC A PUBLIER', title_format)
+
+        # Write headers
+        headers = [
+            'N°', 'NOM(S) ET PRENOM(S) ADHERENTS', 'SIGLES', 'DATES',
+            'NIU', 'VILLES', 'TELEPHONES', 'CDI', 'REGIMES',
+            'ACTIVITES', 'TYPE DOCUMENT', 'N° AVIS',
+            'REF PAIEMENT', 'MONTANT TOTAL', 'DGI'
+        ]
+
+        for col, header in enumerate(headers):
+            worksheet.write(1, col, header, header_format)
+
+        # Write adherent data
+        for row, adherent in enumerate(self.filtered(lambda r: r.is_adherent), 2):
+            # Access both custom fields and native res.partner fields
+            worksheet.write(row, 0, row - 1, regular_format)    # Nˆ
+            worksheet.write(row, 1, adherent.name or '', regular_format)    # NOMS ET PRENOMS
+            worksheet.write(row, 2, adherent.raison_Sociale or '', regular_format)   # Sigles
+            worksheet.write(row, 3, adherent.date_adhesion.strftime('%Y-%m-%d') if adherent.date_adhesion else '', regular_format)  # Dates
+            worksheet.write(row, 4, adherent.identification_fiscale or '', regular_format) # NIU
+            worksheet.write(row, 5, adherent.city or '', regular_format)    # Villes
+            worksheet.write(row, 6, adherent.phone or '', regular_format)   # Telephones
+            worksheet.write(row, 7, adherent.centre_des_impots or '', regular_format)     # CDI
+            worksheet.write(row, 8, adherent.regime_id.name if adherent.regime_id else '', regular_format)  # Regimes
+            worksheet.write(row, 9, adherent.activity_type or '', regular_format)   # Activites
+            worksheet.write(row, 10, adherent.type_document or '', regular_format)  # Type Document
+            worksheet.write(row, 11, adherent.num_avis or '', regular_format) # N° AVIS
+            worksheet.write(row, 12, adherent.ref_paiement or '', regular_format) # REF PAIEMENT
+            worksheet.write(row, 13, adherent.montant_total or 0, regular_format) # montant total
+            worksheet.write(row, 14, 'OUI' if adherent.dgi else 'NON', regular_format) # DGI (custom field)
+
+        # Adjust column widths
+        col_widths = {
+            0: 5, 1: 30, 2: 15, 3: 12, 4: 20, 5: 15,
+            6: 15, 7: 10, 8: 15, 9: 25, 10: 15, 11: 15,
+            12: 20, 13: 15, 14: 15, 15: 10
+        }
+
+        for col, width in col_widths.items():
+            worksheet.set_column(col, col, width)
+
+        workbook.close()
+        output.seek(0)
+
+        # Return the Excel file as download
+        return {
+            'type': 'ir.actions.act_url',
+            'url': '/web/content/?model=ir.attachment&field=datas&filename_field=name&id=%s' % self._create_excel_attachment(
+                output).id,
+            'target': 'self',
+        }
+
+
+    def _create_excel_attachment(self, file_data):
+        """Create attachment record for the Excel file"""
+        return self.env['ir.attachment'].create({
+            'name': f"Contribuables_SYNAPEC_{datetime.now().strftime('%Y%m%d')}.xlsx",
+            'type': 'binary',
+            'datas': base64.b64encode(file_data.read()),
+            'mimetype': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'res_model': self._name,
+            'res_id': False,
+        })
+
+
 class Echeance(models.Model):
     _name = "echeance"
     _description = "Échéance fiscale"
@@ -119,6 +251,7 @@ class Echeance(models.Model):
     ], default='to_pay', readonly=True, string="Etat")
     date_echeance = fields.Date("Date d'échéance", compute="_compute_date_echeance", store=True)
     days_late = fields.Integer("Jours de retard", compute='_compute_days_late', store=True)
+    paiement_ids = fields.One2many('paiement', 'echeance_id', string="Paiements")
 
 
 #filtrage des obligations en fonction de leur régime
