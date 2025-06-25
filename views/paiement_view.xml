@@ -29,6 +29,8 @@
                         <field name="date_paiement"/>
                         <field name="mode_paiement"/>
                         <field name="est_valide"/>
+                        <field name="num_quittance"/>
+                        <field name="quittance"/>
                     </group>
                 </sheet>
             </form>

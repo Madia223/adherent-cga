@@ -13,6 +13,8 @@ class Paiement(models.Model):
     montant = fields.Float("Montant payé", required=True)
     date_paiement = fields.Date("Date de paiement", default=fields.Date.today(), required=True)
     mode_paiement = fields.Selection("payment_mode", string="Mode de paiement", required=True)
+    quittance = fields.Binary("Quittance de paiement", help="Joindre une quittance ou un justificatif de paiement", required=True)
+    num_quittance = fields.Char("Numéro de quittance", help="Numéro de la quittance ou du justificatif de paiement", required=True)
     def payment_mode (self):
         return [
             ('espece', 'Espèces'),

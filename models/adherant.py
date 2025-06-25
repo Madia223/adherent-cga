@@ -365,6 +365,7 @@ class Echeance(models.Model):
     _name = "echeance"
     _description = "Échéance fiscale"
 
+    name = fields.Char(string="Référence", readonly=True, compute="_compute_name", store=True, required=True)
     adherent_id = fields.Many2one("res.partner", string="Nom de l'adhérent", domain=[('is_adherent', '=', True)])
     regime_id = fields.Many2one(related="adherent_id.regime_id", string="Régime Fiscal", readonly=True, store=True)
     obligation = fields.Many2one("fiscal.taxe", string="Obligation à payer", required=True, domain="[('regime_id', '=', regime_id)]")
@@ -378,7 +379,11 @@ class Echeance(models.Model):
     paiement_ids = fields.One2many('paiement', 'echeance_id', string="Paiements")
 
 
-#filtrage des obligations en fonction de leur régime
+    def _compute_name(self):
+        for record in self:
+            record.name = f"{record.adherent_id.name} - {record.obligation.name}"
+
+    #filtrage des obligations en fonction de leur régime
     @api.onchange('adherent_id')
     def _onchange_adherent_id(self):
         if self.adherent_id:
