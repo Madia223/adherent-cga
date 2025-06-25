@@ -9,6 +9,14 @@ from odoo import models, fields, api, _
 from datetime import date
 import io
 from odoo.exceptions import UserError
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image, Table, TableStyle, PageBreak
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.pagesizes import A4
+from reportlab.lib import colors
+import base64
+import os
+
+from odoo.modules import get_module_resource
 
 _logger = logging.getLogger(__name__)
 
@@ -255,7 +263,91 @@ class Adherant(models.Model):
                 output).id,
             'target': 'self',
         }
+    def print_adherent_status(self):
+        from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, PageBreak, Image
+        from reportlab.lib.styles import getSampleStyleSheet
+        from reportlab.lib.pagesizes import A4
+        from reportlab.lib import colors
+        from odoo.modules.module import get_module_resource
+        import io, base64, os
 
+        buffer = io.BytesIO()
+        doc = SimpleDocTemplate(buffer, pagesize=A4)
+        elements = []
+        styles = getSampleStyleSheet()
+
+        logo_path = get_module_resource('adherent-cga', 'static/img', 'images.jpeg')
+
+        for adherent in self:
+            # Logo
+            if os.path.exists(logo_path):
+                logo = Image(logo_path, width=100, height=100)
+                elements.append(logo)
+                elements.append(Spacer(1, 12))
+
+            # Infos adhérent
+            infos = f"""
+                <b>Raison sociale :</b> {adherent.raison_Sociale or ''}<br/>
+                <b>NUI :</b> {adherent.identification_fiscale or ''}<br/>
+                <b>Régime fiscal :</b> {adherent.regime_id.name or ''}<br/>
+                <b>Activité :</b> {adherent.activity_type or ''}<br/>
+                <b>CDI :</b> {adherent.centre_des_impots or ''}<br/>
+                <b>Date d'adhésion :</b> {adherent.date_adhesion or ''}<br/>
+                <b>Montant total payé :</b> {adherent.montant_total:.2f} FCFA
+            """
+            styles = getSampleStyleSheet()
+            custom_style = ParagraphStyle(
+                name='CustomParagraph',
+                parent=styles['Normal'],
+                fontName='Helvetica',
+                fontSize=10,
+                leading=24  # C'est l'interligne
+            )
+            elements.append(Paragraph(f"<b>SITUATION DE : {adherent.raison_Sociale}</b>", styles['Title']))
+            elements.append(Spacer(1, 50))
+            elements.append(Paragraph(infos, custom_style))
+
+            elements.append(Spacer(1, 25))
+
+            # Tableau échéances
+            data = [['Nom Échéance', 'État']]
+            for e in adherent.echeance_ids:
+                data.append([e.obligation.name, e.state])
+
+            table = Table(data, colWidths=[250, 150], rowHeights=[30] * len(data))
+            table.setStyle(TableStyle([
+                ('BACKGROUND', (0, 1), (-1, -1), colors.whitesmoke),
+                ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.whitesmoke, colors.lightgrey]),
+                ('GRID', (0, 0), (-1, -1), 1, colors.orange),
+                ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+            ]))
+            elements.append(table)
+            elements.append(PageBreak())
+
+        # Génération PDF
+        doc.build(elements)
+        pdf_content = buffer.getvalue()
+        buffer.close()
+
+        # Enregistrement temporaire
+        pdf_b64 = base64.b64encode(pdf_content)
+
+        attachment = self.env['ir.attachment'].create({
+            'name': 'statuts_adherents.pdf',
+            'type': 'binary',
+            'datas': pdf_b64,
+            'res_model': 'adherent.cga',
+            'res_id': self[0].id,
+            'mimetype': 'application/pdf',
+        })
+
+        # Lien de téléchargement
+        return {
+            'type': 'ir.actions.act_url',
+            'url': f"/web/content/{attachment.id}?download=true",
+            'target': 'self',
+        }
 
     def _create_excel_attachment(self, file_data):
         """Create attachment record for the Excel file"""

@@ -60,6 +60,11 @@
                         type="object"
                         class="oe_highlight"
                         icon="fa-file-excel-o"/>
+                    <button name="print_adherent_status"
+                        string="Imprimer les Status"
+                        type="object"
+                        class="oe_highlight"
+                        icon="fa-print"/>
                 </header>
 
             </xpath>
