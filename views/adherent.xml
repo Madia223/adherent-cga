@@ -1,0 +1,89 @@
+<odoo>
+    <!-- Vue Formulaire -->
+    <record id="view_adherant_form" model="ir.ui.view">
+        <field name="name">res.partner.form.inherit</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+
+            <!-- Insérer le bouton dans le button_box -->
+            <!-- <xpath expr="//div[@class='oe_button_box']" position="inside">
+                <button name="send_adherent_mail"
+                        string="Envoyer Email"
+                        type="object"
+                        class="oe_highlight"/>
+            </xpath> -->
+
+            <xpath expr="//field[@name='vat']" position="after">
+                <field name="raison_Sociale"/>
+                <field name="identification_fiscale"/>
+                <field name="regime_id"/>
+                <field name="is_adherent"/>
+                <field name="date_adhesion"/>
+                <field name="dgi"/>
+                <field name="ref_paiement"/>
+                <field name="num_avis"/>
+                <field name="type_document"/>
+                <field name="activity_type"/>
+                <field name="centre_des_impots"/>
+                <field name="all_echeances_paid"/>
+                <field name="montant_total"/>
+                <field name="taxe_ids" readonly="1" context="{'default_order': 'deadline'}">
+                    <list string="Impôts liés au regime" editable="bottom" default_order="deadline asc">
+                        <field name="name" string="Nom de l'Impôt"/>
+                        <field name="deadline" string="Echeance"/>
+                    </list>
+                </field>
+                <field name="deadline" readonly="1"/>
+
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_adherent_list" model="ir.ui.view">
+        <field name="name">ress.partner.adherent.list</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='vat']" position="after">
+                <field name="raison_Sociale"/>
+                <field name="identification_fiscale"/>
+                <field name="regime_id"/>
+                <field name="date_adhesion"/>
+<!--                <field name="taxe_ids"/>-->
+            </xpath>
+
+            <xpath expr="//list" position="inside">
+                <header>
+                    <button name="export_adherent_excel"
+                        string="Export Excel"
+                        type="object"
+                        class="oe_highlight"
+                        icon="fa-file-excel-o"/>
+                    <button name="print_adherent_status"
+                        string="Imprimer les Status"
+                        type="object"
+                        class="oe_highlight"
+                        icon="fa-print"/>
+                </header>
+
+            </xpath>
+        </field>
+    </record>
+
+    <!-- vue calendrier -->
+    <record id="view_fiscal_taxe_calendar" model="ir.ui.view">
+        <field name="name">fiscal.taxe.calendar</field>
+        <field name="model">fiscal.taxe</field>
+        <field name="arch" type="xml">
+            <calendar string="Calendrier des Échéances"
+                      date_start="deadline"
+                      color="regime_id"
+                      mode="year">
+                <field name="name"/>
+                <field name="regime_id"/>
+            </calendar>
+        </field>
+    </record>
+
+</odoo>
