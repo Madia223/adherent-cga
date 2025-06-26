@@ -21,9 +21,9 @@
                 <field name="is_adherent"/>
                 <field name="date_adhesion"/>
                 <field name="dgi"/>
-                <field name="ref_paiement"/>
-                <field name="num_avis"/>
-                <field name="type_document"/>
+<!--                <field name="ref_paiement"/>-->
+<!--                <field name="num_avis"/>-->
+<!--                <field name="type_document"/>-->
                 <field name="activity_type"/>
                 <field name="centre_des_impots"/>
                 <field name="all_echeances_paid"/>

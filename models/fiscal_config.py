@@ -37,7 +37,7 @@ class FiscalTaxe(models.Model):
 
     name = fields.Char(string='Nom de l\'Impôt', required=True)
     deadline = fields.Date(string='Échéance')
-    regime_id = fields.Many2one('fiscal.regime', string='Régime Fiscal', required=True)
+    regime_id = fields.Many2one('fiscal.regime', string='Régime Fiscal', required=True, ondelete='cascade')
 
     # methode pour recuperer toutes les echeances dans un tableau et les afficher dans la console
     @api.model

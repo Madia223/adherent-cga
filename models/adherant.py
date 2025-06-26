@@ -40,7 +40,8 @@ class Adherant(models.Model):
     all_echeances_paid = fields.Boolean("Toutes les échéances payées", compute='_compute_all_echeances_paid',
                                         store=True)
     dgi = fields.Boolean("DGI", default=True)
-    ref_paiement = fields.Integer("REF PAIEMENT")
+
+    ref_paiement = fields.Char("REF PAIEMENT")
     num_avis = fields.Char("N° Avis")
     type_document = fields.Selection([
         ('quittance', 'QUITTANCE'),
@@ -365,10 +366,10 @@ class Echeance(models.Model):
     _name = "echeance"
     _description = "Échéance fiscale"
 
-    name = fields.Char(string="Référence", readonly=True, compute="_compute_name", store=True, required=True)
-    adherent_id = fields.Many2one("res.partner", string="Nom de l'adhérent", domain=[('is_adherent', '=', True)])
-    regime_id = fields.Many2one(related="adherent_id.regime_id", string="Régime Fiscal", readonly=True, store=True)
-    obligation = fields.Many2one("fiscal.taxe", string="Obligation à payer", required=True, domain="[('regime_id', '=', regime_id)]")
+    name = fields.Char(string="Référence", readonly=True, compute="_compute_name", store=True)
+    adherent_id = fields.Many2one("res.partner", string="Nom de l'adhérent", domain=[('is_adherent', '=', True)], ondelete='cascade')
+    regime_id = fields.Many2one(related="adherent_id.regime_id", string="Régime Fiscal", readonly=True, store=True, ondelete='cascade')
+    obligation = fields.Many2one("fiscal.taxe", string="Obligation à payer", required=True, domain="[('regime_id', '=', regime_id)]", ondelete='cascade')
     state = fields.Selection([
         ('to_pay','À payer'),
         ('paid','Payé'),
@@ -378,7 +379,7 @@ class Echeance(models.Model):
     days_late = fields.Integer("Jours de retard", compute='_compute_days_late', store=True)
     paiement_ids = fields.One2many('paiement', 'echeance_id', string="Paiements")
 
-
+    @api.depends('adherent_id', 'obligation')
     def _compute_name(self):
         for record in self:
             record.name = f"{record.adherent_id.name} - {record.obligation.name}"
