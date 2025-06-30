@@ -4,7 +4,7 @@ import logging
 import xlsxwriter
 from dateutil.relativedelta import relativedelta
 from openpyxl.workbook import Workbook
-from datetime import  datetime
+from datetime import datetime
 from odoo import models, fields, api, _
 from datetime import date
 import io
@@ -25,6 +25,7 @@ class Adherant(models.Model):
     _inherit = 'res.partner'
 
 
+    num_adh = fields.Char("numéro d'adhésion", readonly = True, compute = "_compute_num_adh")
     raison_Sociale = fields.Char(string='Sigles', required=True)
     identification_fiscale = fields.Char(string='NUI', required=True)
     regime_id = fields.Many2one('fiscal.regime', string='Régime Fiscal', required=True)
@@ -41,12 +42,6 @@ class Adherant(models.Model):
                                         store=True)
     dgi = fields.Boolean("DGI", default=True)
 
-    ref_paiement = fields.Char("REF PAIEMENT")
-    num_avis = fields.Char("N° Avis")
-    type_document = fields.Selection([
-        ('quittance', 'QUITTANCE'),
-        ('accuse de paiement', 'ACCUSÉ DE PAIEMENT')
-    ], string="Type Document", required=True)
     activity_type = fields.Char("Activité(s)", required=True)
     centre_des_impots = fields.Char("CDI", required=True)
     date_adhesion = fields.Date("Date d'adhésion", default=fields.Date.today(), required=True);
@@ -54,6 +49,12 @@ class Adherant(models.Model):
                                   readonly=True,
                                   help="Somme des paiements validés pour cet adhérent")
 
+
+    @api.depends('raison_Sociale')
+    def _compute_num_adh(self):
+        for record in self:
+            if record.raison_Sociale:
+                record.num_adh = f"INOVCGAADH{record.raison_Sociale}{record.id:04d}"
 
     @api.depends('echeance_ids.paiement_ids.montant', 'echeance_ids.paiement_ids.est_valide')
     def _compute_montant_total(self):
@@ -218,8 +219,7 @@ class Adherant(models.Model):
         headers = [
             'N°', 'NOM(S) ET PRENOM(S) ADHERENTS', 'SIGLES', 'DATES',
             'NIU', 'VILLES', 'TELEPHONES', 'CDI', 'REGIMES',
-            'ACTIVITES', 'TYPE DOCUMENT', 'N° AVIS',
-            'REF PAIEMENT', 'MONTANT TOTAL', 'DGI'
+            'ACTIVITES', 'MONTANT TOTAL', 'DGI'
         ]
 
         for col, header in enumerate(headers):
@@ -238,9 +238,6 @@ class Adherant(models.Model):
             worksheet.write(row, 7, adherent.centre_des_impots or '', regular_format)     # CDI
             worksheet.write(row, 8, adherent.regime_id.name if adherent.regime_id else '', regular_format)  # Regimes
             worksheet.write(row, 9, adherent.activity_type or '', regular_format)   # Activites
-            worksheet.write(row, 10, adherent.type_document or '', regular_format)  # Type Document
-            worksheet.write(row, 11, adherent.num_avis or '', regular_format) # N° AVIS
-            worksheet.write(row, 12, adherent.ref_paiement or '', regular_format) # REF PAIEMENT
             worksheet.write(row, 13, adherent.montant_total or 0, regular_format) # montant total
             worksheet.write(row, 14, 'OUI' if adherent.dgi else 'NON', regular_format) # DGI (custom field)
 
@@ -316,13 +313,18 @@ class Adherant(models.Model):
                 data.append([e.obligation.name, e.state])
 
             table = Table(data, colWidths=[250, 150], rowHeights=[30] * len(data))
+            violet = colors.HexColor('#6A1B9A')
+            orange = colors.HexColor('#FF9800')
+
             table.setStyle(TableStyle([
-                ('BACKGROUND', (0, 1), (-1, -1), colors.whitesmoke),
-                ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.whitesmoke, colors.lightgrey]),
-                ('GRID', (0, 0), (-1, -1), 1, colors.orange),
+                ('BACKGROUND', (0, 0), (-1, 0), violet),
+                ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+                ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.whitesmoke, colors.beige]),
+                ('GRID', (0, 0), (-1, -1), 1, orange),
                 ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
                 ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
             ]))
+
             elements.append(table)
             elements.append(PageBreak())
 
@@ -344,6 +346,95 @@ class Adherant(models.Model):
         })
 
         # Lien de téléchargement
+        return {
+            'type': 'ir.actions.act_url',
+            'url': f"/web/content/{attachment.id}?download=true",
+            'target': 'self',
+        }
+
+    def generate_carte_adhesion(self):
+        from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image, Table, TableStyle
+        from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+        from reportlab.lib.units import mm
+        from reportlab.lib import colors
+        import io, base64, os
+        from odoo.modules.module import get_module_resource
+
+        self.ensure_one()
+        buffer = io.BytesIO()
+        width = 86 * mm
+        height = 54 * mm
+        doc = SimpleDocTemplate(buffer, pagesize=(width, height), leftMargin=5, rightMargin=5, topMargin=5,
+                                bottomMargin=5)
+
+        styles = getSampleStyleSheet()
+        violet = colors.HexColor('#6A1B9A')
+        orange = colors.HexColor('#FF9800')
+
+        style_card = ParagraphStyle(
+            name='CardStyle',
+            fontName='Helvetica-Bold',
+            fontSize=8,
+            textColor=colors.white,
+            alignment=1,  # centre
+            spaceAfter=3,
+        )
+
+        # Logo
+        logo_path = get_module_resource('adherent-cga', 'static/img', 'images.jpeg')
+
+        elements = []
+        if os.path.exists(logo_path):
+            logo = Image(logo_path, width=30, height=30)
+            elements.append(logo)
+
+        # Bandeau violet
+        elements.append(Spacer(1, 2))
+        elements.append(Paragraph("CARTE D'ADHÉSION CGA", ParagraphStyle(
+            name='TitleCard',
+            fontName='Helvetica-Bold',
+            fontSize=9,
+            textColor=orange,
+            alignment=1
+        )))
+
+        # Tableau des infos
+        data = [
+            ['Nom / Raison sociale', self.raison_Sociale or ''],
+            ['Numéro CGA', self.num_adh or ''],
+            ['NUI', self.identification_fiscale or ''],
+            ['Régime Fiscal', self.regime_id.name or ''],
+            ['CDI', self.centre_des_impots or ''],
+            ['Date d\'adhésion', self.date_adhesion.strftime('%d/%m/%Y') if self.date_adhesion else '']
+        ]
+
+        table = Table(data, colWidths=[40 * mm, 40 * mm], rowHeights=[5 * mm] * len(data))
+        table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), violet),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+            ('ALIGN', (0, 0), (-1, -1), 'LEFT-CENTER'),
+            ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
+            ('FONTSIZE', (0, 0), (-1, -1), 7),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 3),
+        ]))
+
+        elements.append(table)
+
+        doc.build(elements)
+        pdf_content = buffer.getvalue()
+        buffer.close()
+
+        # Enregistrement
+        pdf_b64 = base64.b64encode(pdf_content)
+        attachment = self.env['ir.attachment'].create({
+            'name': f"Carte_Adhésion_{self.name}.pdf",
+            'type': 'binary',
+            'datas': pdf_b64,
+            'res_model': self._name,
+            'res_id': self.id,
+            'mimetype': 'application/pdf',
+        })
+
         return {
             'type': 'ir.actions.act_url',
             'url': f"/web/content/{attachment.id}?download=true",

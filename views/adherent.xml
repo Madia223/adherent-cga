@@ -15,15 +15,13 @@
             </xpath> -->
 
             <xpath expr="//field[@name='vat']" position="after">
+                <field name="num_adh"/>
                 <field name="raison_Sociale"/>
                 <field name="identification_fiscale"/>
                 <field name="regime_id"/>
                 <field name="is_adherent"/>
                 <field name="date_adhesion"/>
                 <field name="dgi"/>
-<!--                <field name="ref_paiement"/>-->
-<!--                <field name="num_avis"/>-->
-<!--                <field name="type_document"/>-->
                 <field name="activity_type"/>
                 <field name="centre_des_impots"/>
                 <field name="all_echeances_paid"/>
@@ -62,6 +60,11 @@
                         icon="fa-file-excel-o"/>
                     <button name="print_adherent_status"
                         string="Imprimer les Status"
+                        type="object"
+                        class="oe_highlight"
+                        icon="fa-print"/>
+                    <button name="generate_carte_adhesion"
+                        string="Carte d'adhésion"
                         type="object"
                         class="oe_highlight"
                         icon="fa-print"/>
