@@ -54,7 +54,9 @@ class Adherant(models.Model):
     def _compute_num_adh(self):
         for record in self:
             if record.raison_Sociale:
-                record.num_adh = f"INOVCGAADH{record.raison_Sociale}{record.id:04d}"
+                record.num_adh = f"INOVCGAADH{record.raison_Sociale}{record.id}"
+            else:
+                record.num_adh = ""
 
     @api.depends('echeance_ids.paiement_ids.montant', 'echeance_ids.paiement_ids.est_valide')
     def _compute_montant_total(self):
@@ -453,6 +455,87 @@ class Adherant(models.Model):
         })
 
 
+    def portal_print_fiche(self):
+        import io, base64, os
+        from odoo.modules.module import get_module_resource
+        from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, PageBreak, Image
+        from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+        from reportlab.lib.pagesizes import A4
+        from reportlab.lib import colors
+        import logging
+
+        _logger = logging.getLogger(__name__)
+
+        buffer = io.BytesIO()
+        doc = SimpleDocTemplate(buffer, pagesize=A4)
+        elements = []
+        styles = getSampleStyleSheet()
+
+        adherent = self
+        logo_path = get_module_resource('adherent-cga', 'static/img', 'images.jpeg')
+        if os.path.exists(logo_path):
+            logo = Image(logo_path, width=100, height=100)
+            elements.append(logo)
+            elements.append(Spacer(1, 12))
+
+        infos = f"""
+            <b>Raison sociale :</b> {adherent.raison_Sociale or ''}<br/>
+            <b>NUI :</b> {adherent.identification_fiscale or ''}<br/>
+            <b>Régime fiscal :</b> {adherent.regime_id.name or ''}<br/>
+            <b>Activité :</b> {adherent.activity_type or ''}<br/>
+            <b>CDI :</b> {adherent.centre_des_impots or ''}<br/>
+            <b>Date d'adhésion :</b> {adherent.date_adhesion or ''}<br/>
+            <b>Montant total payé :</b> {adherent.montant_total:.2f} FCFA
+        """
+        custom_style = ParagraphStyle(
+            name='CustomParagraph',
+            parent=styles['Normal'],
+            fontName='Helvetica',
+            fontSize=10,
+            leading=24
+        )
+        elements.append(Paragraph(f"<b>SITUATION DE : {adherent.raison_Sociale}</b>", styles['Title']))
+        elements.append(Spacer(1, 50))
+        elements.append(Paragraph(infos, custom_style))
+
+        # Tableau des échéances
+        data = [['Nom Échéance', 'État']]
+        for e in adherent.echeance_ids:
+            data.append([e.obligation.name, e.state])
+
+        table = Table(data, colWidths=[250, 150])
+        table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#6A1B9A')),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+            ('GRID', (0, 0), (-1, -1), 1, colors.HexColor('#FF9800')),
+        ]))
+        elements.append(table)
+
+        doc.build(elements)
+        pdf_content = buffer.getvalue()
+        buffer.close()
+
+        pdf_b64 = base64.b64encode(pdf_content)
+
+        attachment = self.env['ir.attachment'].create({
+            'name': 'fiche_adherent.pdf',
+            'type': 'binary',
+            'datas': pdf_b64,
+            'res_model': 'res.partner',
+            'res_id': self.id,
+            'mimetype': 'application/pdf',
+            'public': True  #  rend l'attachment accessible à tous les utilisateurs connectés
+        })
+
+        _logger.info("Attachment créé : ID=%s", attachment.id)
+
+        return {
+            'type': 'ir.actions.act_url',
+            'url': f"/web/content/{attachment.id}?download=true",
+            'target': 'self',
+        }
+
+
 class Echeance(models.Model):
     _name = "echeance"
     _description = "Échéance fiscale"
@@ -616,3 +699,6 @@ class Echeance(models.Model):
                 _logger.error(f"Erreur lors de l’envoi à {adherent.name} : {e}")
 
         return True
+    
+
+   

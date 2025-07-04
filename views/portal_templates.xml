@@ -1,50 +1,92 @@
 <odoo>
-  <template id="portal_echeance_page" inherit_id="portal.portal_my_home" name="Mes Échéances" priority="20">
+    <template id="portal_echeance_page" inherit_id="portal.portal_my_home" name="Mes Échéances" priority="20">
 
-    <!-- Injecter du CSS dans la page en toute sécurité -->
-    <xpath expr="//div[@class='o_portal_my_home']" position="before">
-      <style type="text/css">
-        a[href*='/my/orders'],
-        a[href*='/my/invoices'],
-        a[href*='/my/security'] {
-          display: none !important;
-        }
-      </style>
-    </xpath>
+      <!-- Injecter du CSS dans la page en toute sécurité -->
+      <xpath expr="//div[@class='o_portal_my_home']" position="before">
+        <style type="text/css">
+          a[href*='/my/orders'],
+          a[href*='/my/invoices'],
+          a[href*='/my/security'] {
+            display: none !important;
+          }
+        </style>
+      </xpath>
 
-    <!-- Ajouter notre tableau de l'agenda fiscal dans le bon bloc -->
-    <xpath expr="//div[@class='o_portal_my_home']" position="inside">
-      <div class="oe_structure">
-        <h2>Mon Agenda Fiscal</h2>
-        <t t-if="echeances">
-          <table class="table table-sm">
-            <thead>
-              <tr>
-                <th>Impôt</th>
-                <th>Échéance</th>
-                <th>Statut</th>
-              </tr>
-            </thead>
-            <tbody>
-              <t t-foreach="echeances" t-as="echeance">
+      <!-- <xpath expr="//div[@class='o_portal_my_home']" position="inside">
+        <t t-set="member"  t-value="request.env['res.partner'].search([('user_id','=',uid)], limit=1)"/>
+        <t t-if="member">
+            <a  class="btn btn-primary mt-2"
+                t-att-href="'/my/adherent/%s/card' % member.id">
+                Télécharger ma fiche d'adhérent
+            </a>
+            <a t-att-href="'/my/adherent/%s/card' % member.id" class="btn btn-primary">
+              Télécharger ma fiche d'adhérent
+            </a>
+        </t>
+    </xpath> -->
+
+      <!-- Ajouter notre tableau de l'agenda fiscal dans le bon bloc -->
+      <xpath expr="//div[@class='o_portal_my_home']" position="inside">
+        <div class="oe_structure">
+          <h2>Mon Agenda Fiscal</h2>
+
+          <t t-if="echeances">
+            <table class="table table-sm">
+              <thead>
                 <tr>
-                  <td><t t-esc="echeance.obligation.name"/></td>
-                  <td><t t-esc="echeance.date_echeance.strftime('%d/%m/%Y')"/></td>
-                  <td>
-                    <t t-if="echeance.state == 'paid'">Payé</t>
-                    <t t-elif="echeance.state == 'late'">En Retard</t>
-                    <t t-else="">À venir</t>
-                  </td>
+                  <th>Impôt</th>
+                  <th>Échéance</th>
+                  <th>Statut</th>
+                  <th>Actions</th> <!-- Ajout d'une colonne pour les actions -->
                 </tr>
-              </t>
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                <t t-foreach="echeances" t-as="echeance">
+                  <tr>
+                    <td><t t-esc="echeance.obligation.name"/></td>
+                    <td><t t-esc="echeance.date_echeance.strftime('%d/%m/%Y')"/></td>
+                    <td>
+                      <t t-if="echeance.state == 'paid'">Payé</t>
+                      <t t-elif="echeance.state == 'late'">En Retard</t>
+                      <t t-else="">À venir</t>
+                    </td>
+                  </tr>
+                </t>
+              </tbody>
+            </table>
+          </t>
+          <t t-else="">
+            <p>Vous n’avez aucune échéance fiscale enregistrée.</p>
+          </t>
+        </div>
+      </xpath>
+
+
+       <!-- On vise la div 'o_portal_my_home' de la page d’accueil du portail -->
+    <xpath expr="//div[contains(@class,'o_portal_my_home')]" position="inside">
+
+        <!-- 1️⃣  On récupère simplement le partner courant -->
+        <t t-set="member" t-value="request.env.user.partner_id"/>
+
+        <!-- 2️⃣  On affiche le bouton seulement si on a un partner -->
+        <!-- <t t-if="member">
+            <a t-att-href="'/my/adherent/%s/card' % member.id"
+               class="btn btn-primary mt-2">
+                Télécharger ma fiche d'adhérent
+            </a>
+        </t> -->
+        <t t-set="member" t-value="request.env.user.partner_id"/>
+        <t t-if="member">
+          <a t-att-href="'/my/adherent/card'" class="btn btn-primary">
+            Télécharger ma fiche d’adhérent
+          </a>
         </t>
-        <t t-else="">
-          <p>Vous n’avez aucune échéance fiscale enregistrée.</p>
-        </t>
-      </div>
+
     </xpath>
 
-  </template>
+
+    </template>
+
+
 </odoo>
+

@@ -40,6 +40,14 @@
 
         'views/portal_templates.xml',
     ],
+
+    # Ajout du fichier css pour la customization du portail
+    'assets': {
+    'web.assets_frontend': [
+        'adherent-cga/static/src/css/custom_portal.css',
+    ],
+
+
     # only loaded in demonstration mode
     'demo': [
         'demo/demo.xml',
@@ -47,5 +55,8 @@
     'application' : True,
     'installable' : True,
     'auto_install' : False
-}
 
+    
+}, 
+
+}
