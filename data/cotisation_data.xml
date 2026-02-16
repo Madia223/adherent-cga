@@ -1,0 +1,12 @@
+<!-- data/cotisation_data.xml -->
+<odoo>
+    <data noupdate="1">
+        <record id="seq_cotisation_plan" model="ir.sequence">
+            <field name="name">Séquence Plan Cotisation</field>
+            <field name="code">cotisation.plan.seq</field>
+            <field name="prefix">COT/%(year)s/</field>
+            <field name="padding">4</field>
+            <field name="company_id" eval="False"/>
+        </record>
+    </data>
+</odoo>

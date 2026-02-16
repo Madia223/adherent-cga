@@ -1,0 +1,12 @@
+<!-- data/adhesion_data.xml -->
+<odoo>
+    <data noupdate="1">
+        <record id="seq_adhesion_versement" model="ir.sequence">
+            <field name="name">Séquence Versement Adhésion</field>
+            <field name="code">adhesion.versement.seq</field>
+            <field name="prefix">VERS/%(year)s/</field>
+            <field name="padding">4</field>
+            <field name="company_id" eval="False"/>
+        </record>
+    </data>
+</odoo>

@@ -1,62 +1,55 @@
-# -*- coding: utf-8 -*-
+# __manifest__.py
 {
     'name': "GESTION CGA",
 
-    'summary': "module Odoo intégrant la gestion des obligations fiscales, la publication des échéances et le suivi des paiements.",
+    'summary': "Module Odoo intégrant la gestion des obligations fiscales, "
+               "la publication des échéances et le suivi des paiements.",
 
     'description': """
-            •	Automatiser l'enregistrement des adhérents et le paramétrage de leur régime fiscal.
-            •	Générer et publier les échéanciers fiscaux adaptés à chaque régime.
-            •	Programmer des notifications de rappel avant les échéances.
-            •	Assurer le suivi des paiements des obligations et alerter en cas de retard.
-
+        • Automatiser l'enregistrement des adhérents et le paramétrage de leur régime fiscal.
+        • Générer et publier les échéanciers fiscaux adaptés à chaque régime.
+        • Programmer des notifications de rappel avant les échéances.
+        • Assurer le suivi des paiements des obligations et alerter en cas de retard.
+        • Suivre les versements d'adhésion au CGA.
     """,
 
     'author': "INOV CAMEROON",
     'website': "https://www.inov.cm",
-
-    # Categories can be used to filter modules in modules listing
-    # Check https://github.com/odoo/odoo/blob/15.0/odoo/addons/base/data/ir_module_category_data.xml
-    # for the full list
     'category': 'Human Resources',
-    'version': '0.1',
+    'version': '1.1',
 
-    # any module necessary for this one to work correctly
-    'depends': ['base', 'calendar','portal','sale_subscription'],
+    'depends': ['base', 'calendar', 'portal', 'sale_subscription'],
 
-    # always loaded
-    'data': [
+     'data': [
         'security/ir.model.access.csv',
+        'data/paiement_data.xml',
+        'data/adhesion_data.xml',
+        'data/cotisation_data.xml',              # ← NOUVEAU
+        'data/fiscal_data.xml',
+        'data/email_template.xml',
+        'data/cron_data.xml',
         'views/views.xml',
         'views/adherent.xml',
         'views/echeance.xml',
         'views/paiement_view.xml',
         'views/fiscal_view.xml',
+        'views/adhesion_versement_view.xml',
+        'views/cotisation_view.xml',             # ← NOUVEAU
         'views/templates.xml',
-        'data/paiement_data.xml',
-        'data/fiscal_data.xml',
-        'data/email_template.xml',
-        'data/cron_data.xml',
-
         'views/portal_templates.xml',
     ],
 
-    # Ajout du fichier css pour la customization du portail
     'assets': {
-    'web.assets_frontend': [
-        'adherent-cga/static/src/css/custom_portal.css',
-    ],
+        'web.assets_frontend': [
+            'adherent-cga/static/src/css/custom_portal.css',
+        ],
+    },                                           # ← FERMETURE CORRIGÉE
 
-
-    # only loaded in demonstration mode
     'demo': [
         'demo/demo.xml',
     ],
-    'application' : True,
-    'installable' : True,
-    'auto_install' : False
 
-    
-}, 
-
+    'application': True,
+    'installable': True,
+    'auto_install': False,
 }

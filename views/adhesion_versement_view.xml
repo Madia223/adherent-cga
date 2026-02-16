@@ -1,0 +1,51 @@
+<!-- views/adhesion_versement_view.xml -->
+<odoo>
+    <data>
+
+        <!-- ===== VUE LISTE ===== -->
+        <record id="adhesion_versement_list_view" model="ir.ui.view">
+            <field name="name">adhesion.versement.list</field>
+            <field name="model">adhesion.versement</field>
+            <field name="arch" type="xml">
+                <list>
+                    <field name="name"/>
+                    <field name="adherent_id"/>
+                    <field name="date_versement"/>
+                    <field name="montant" sum="Total versé"/>
+                    <field name="montant_adhesion"/>
+                    <field name="reste_apres"/>
+                    <field name="note" optional="hide"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- ===== VUE FORMULAIRE ===== -->
+        <record id="adhesion_versement_form_view" model="ir.ui.view">
+            <field name="name">adhesion.versement.form</field>
+            <field name="model">adhesion.versement</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <group string="Versement">
+                                <field name="name" readonly="1"/>
+                                <field name="adherent_id"/>
+                                <field name="date_versement"/>
+                                <field name="montant"/>
+                            </group>
+                            <group string="Situation adhésion">
+                                <field name="montant_adhesion"/>
+                                <field name="reste_apres"/>
+                            </group>
+                        </group>
+                        <group>
+                            <field name="note" placeholder="Observation éventuelle..."/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+
+    </data>
+</odoo>

@@ -44,10 +44,65 @@ class Adherant(models.Model):
 
     activity_type = fields.Char("Activité(s)", required=True)
     centre_des_impots = fields.Char("CDI", required=True)
-    date_adhesion = fields.Date("Date d'adhésion", default=fields.Date.today(), required=True);
+    date_adhesion = fields.Date("Date d'adhésion", default=fields.Date.today(), required=True)
     montant_total = fields.Float("Montant total payé", compute='_compute_montant_total', store=True,
                                   readonly=True,
                                   help="Somme des paiements validés pour cet adhérent")
+
+
+    # =============================================
+    #   FRAIS D'ADHÉSION & VERSEMENTS
+    # =============================================
+    montant_adhesion = fields.Float(
+        "Frais d'adhésion",
+        default=0,
+        help="Montant total à payer pour finaliser l'adhésion au CGA",
+    )
+    versement_adhesion_ids = fields.One2many(
+        'adhesion.versement', 'adherent_id',
+        string="Versements d'adhésion",
+    )
+    total_verse_adhesion = fields.Float(
+        "Total versé (adhésion)",
+        compute='_compute_adhesion_amounts',
+        store=True, readonly=True,
+    )
+    reste_adhesion = fields.Float(
+        "Reste à payer (adhésion)",
+        compute='_compute_adhesion_amounts',
+        store=True, readonly=True,
+    )
+    adhesion_soldee = fields.Boolean(
+        "Adhésion soldée",
+        compute='_compute_adhesion_amounts',
+        store=True, readonly=True,
+    )
+
+    # =============================================
+    #   COTISATIONS
+    # =============================================
+    cotisation_plan_ids = fields.One2many(
+        'cotisation.plan', 'adherent_id',
+        string="Plans de cotisation",
+    )
+    cotisation_count = fields.Integer(
+        "Nb plans cotisation",
+        compute='_compute_cotisation_count',
+    )
+
+    def _compute_cotisation_count(self):
+        for rec in self:
+            rec.cotisation_count = len(rec.cotisation_plan_ids)
+
+    @api.depends('montant_adhesion', 'versement_adhesion_ids.montant')
+    def _compute_adhesion_amounts(self):
+        for rec in self:
+            total = sum(rec.versement_adhesion_ids.mapped('montant'))
+            rec.total_verse_adhesion = total
+            rec.reste_adhesion = rec.montant_adhesion - total
+            rec.adhesion_soldee = (
+                rec.montant_adhesion > 0 and rec.reste_adhesion <= 0
+            )
 
 
     @api.depends('raison_Sociale')
@@ -414,7 +469,7 @@ class Adherant(models.Model):
         table.setStyle(TableStyle([
             ('BACKGROUND', (0, 0), (-1, 0), violet),
             ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
-            ('ALIGN', (0, 0), (-1, -1), 'LEFT-CENTER'),
+            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
             ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
             ('FONTSIZE', (0, 0), (-1, -1), 7),
             ('BOTTOMPADDING', (0, 0), (-1, -1), 3),
@@ -541,17 +596,50 @@ class Echeance(models.Model):
     _description = "Échéance fiscale"
 
     name = fields.Char(string="Référence", readonly=True, compute="_compute_name", store=True)
-    adherent_id = fields.Many2one("res.partner", string="Nom de l'adhérent", domain=[('is_adherent', '=', True)], ondelete='cascade')
-    regime_id = fields.Many2one(related="adherent_id.regime_id", string="Régime Fiscal", readonly=True, store=True, ondelete='cascade')
-    obligation = fields.Many2one("fiscal.taxe", string="Obligation à payer", required=True, domain="[('regime_id', '=', regime_id)]", ondelete='cascade')
+    adherent_id = fields.Many2one("res.partner", string="Nom de l'adhérent", domain=[('is_adherent', '=', True)],
+                                  ondelete='cascade')
+    regime_id = fields.Many2one(related="adherent_id.regime_id", string="Régime Fiscal", readonly=True, store=True,
+                                ondelete='cascade')
+    obligation = fields.Many2one("fiscal.taxe", string="Obligation à payer", required=True,
+                                 domain="[('regime_id', '=', regime_id)]", ondelete='cascade')
     state = fields.Selection([
-        ('to_pay','À payer'),
-        ('paid','Payé'),
+        ('to_pay', 'À payer'),
+        ('paid', 'Payé'),
         ('late', 'En retard')
     ], default='to_pay', readonly=True, string="Etat")
     date_echeance = fields.Date("Date d'échéance", compute="_compute_date_echeance", store=True)
     days_late = fields.Integer("Jours de retard", compute='_compute_days_late', store=True)
     paiement_ids = fields.One2many('paiement', 'echeance_id', string="Paiements")
+
+    # ══════════════════════════════════════════════════════
+    #   NOUVEAUX CHAMPS POUR LE SUIVI DES MONTANTS
+    # ══════════════════════════════════════════════════════
+    montant_attendu = fields.Float(
+        "Montant attendu",
+        default=0,
+        help="Montant total à payer pour cette échéance fiscale",
+    )
+    total_verse = fields.Float(
+        "Total versé",
+        compute='_compute_total_verse',
+        store=True,
+        readonly=True,
+    )
+    reste_a_payer = fields.Float(
+        "Reste à payer",
+        compute='_compute_total_verse',
+        store=True,
+        readonly=True,
+    )
+
+    @api.depends('montant_attendu', 'paiement_ids.montant', 'paiement_ids.est_valide')
+    def _compute_total_verse(self):
+        for rec in self:
+            total = sum(
+                p.montant for p in rec.paiement_ids if p.est_valide
+            )
+            rec.total_verse = total
+            rec.reste_a_payer = rec.montant_attendu - total
 
     @api.depends('adherent_id', 'obligation')
     def _compute_name(self):

@@ -1,0 +1,160 @@
+<!-- views/cotisation_view.xml -->
+<odoo>
+    <data>
+
+        <!-- ══════════════════════════════════════════ -->
+        <!--         PLAN DE COTISATION : FORMULAIRE    -->
+        <!-- ══════════════════════════════════════════ -->
+        <record id="cotisation_plan_form_view" model="ir.ui.view">
+            <field name="name">cotisation.plan.form</field>
+            <field name="model">cotisation.plan</field>
+            <field name="arch" type="xml">
+                <form>
+                    <header>
+                        <!-- Boutons de workflow -->
+                        <button name="action_generer_tranches"
+                                string="Générer les tranches"
+                                type="object"
+                                class="btn-primary"
+                                icon="fa-cogs"
+                                invisible="state != 'brouillon'"/>
+                        <button name="action_remettre_brouillon"
+                                string="Remettre en brouillon"
+                                type="object"
+                                class="btn-secondary"
+                                invisible="state not in ('en_cours', 'annule')"
+                                confirm="Cela supprimera toutes les tranches. Continuer ?"/>
+                        <button name="action_annuler"
+                                string="Annuler"
+                                type="object"
+                                class="btn-danger"
+                                invisible="state in ('solde', 'annule')"/>
+
+                        <field name="state" widget="statusbar"
+                               statusbar_visible="brouillon,en_cours,solde"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" readonly="1"/>
+                            </h1>
+                        </div>
+
+                        <group>
+                            <group string="Configuration du plan">
+                                <field name="adherent_id"
+                                       readonly="state != 'brouillon'"/>
+                                <field name="montant_total"
+                                       readonly="state != 'brouillon'"/>
+                                <field name="nb_tranches"
+                                       readonly="state != 'brouillon'"/>
+                                <field name="date_debut"
+                                       readonly="state != 'brouillon'"/>
+                                <field name="frequence"
+                                       readonly="state != 'brouillon'"/>
+                                <field name="intervalle_jours"
+                                       readonly="state != 'brouillon'"
+                                       invisible="frequence != 'personnalise'"/>
+                            </group>
+                            <group string="Suivi">
+                                <field name="total_verse"/>
+                                <field name="reste_global"
+                                       decoration-danger="reste_global &gt; 0"
+                                       decoration-success="reste_global &lt;= 0"/>
+                                <field name="nb_tranches_payees"/>
+                                <field name="progression" widget="progressbar"/>
+                            </group>
+                        </group>
+
+                        <notebook>
+                            <page string="Tranches" name="tranches">
+                                <field name="tranche_ids"
+                                       readonly="state == 'brouillon'">
+                                    <list editable="bottom"
+                                          decoration-danger="state == 'en_retard'"
+                                          decoration-success="state == 'payee'"
+                                          decoration-warning="state == 'partiel'">
+                                        <field name="numero" readonly="1"/>
+                                        <field name="date_prevue" readonly="1"/>
+                                        <field name="montant_prevu" readonly="1" sum="Total prévu"/>
+                                        <field name="montant_verse" sum="Total versé"/>
+                                        <field name="reste" readonly="1" sum="Total reste"/>
+                                        <field name="date_paiement"/>
+                                        <field name="state"
+                                               widget="badge"
+                                               decoration-danger="state == 'en_retard'"
+                                               decoration-success="state == 'payee'"
+                                               decoration-warning="state == 'partiel'"
+                                               decoration-info="state == 'en_attente'"/>
+                                        <field name="note" optional="hide"/>
+                                    </list>
+                                </field>
+                            </page>
+                            <page string="Notes" name="notes">
+                                <field name="note"
+                                       placeholder="Observations, conditions particulières..."/>
+                            </page>
+                        </notebook>
+
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- ══════════════════════════════════════════ -->
+        <!--         PLAN DE COTISATION : LISTE         -->
+        <!-- ══════════════════════════════════════════ -->
+        <record id="cotisation_plan_list_view" model="ir.ui.view">
+            <field name="name">cotisation.plan.list</field>
+            <field name="model">cotisation.plan</field>
+            <field name="arch" type="xml">
+                <list decoration-muted="state == 'annule'"
+                      decoration-success="state == 'solde'">
+                    <field name="name"/>
+                    <field name="adherent_id"/>
+                    <field name="montant_total" sum="Total"/>
+                    <field name="nb_tranches"/>
+                    <field name="frequence"/>
+                    <field name="total_verse" sum="Total versé"/>
+                    <field name="reste_global" sum="Total reste"
+                           decoration-danger="reste_global &gt; 0"/>
+                    <field name="progression" widget="progressbar"/>
+                    <field name="state" widget="badge"
+                           decoration-danger="state == 'annule'"
+                           decoration-success="state == 'solde'"
+                           decoration-info="state == 'brouillon'"
+                           decoration-primary="state == 'en_cours'"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- ══════════════════════════════════════════ -->
+        <!--         TRANCHES : LISTE SÉPARÉE           -->
+        <!-- ══════════════════════════════════════════ -->
+        <record id="cotisation_tranche_list_view" model="ir.ui.view">
+            <field name="name">cotisation.tranche.list</field>
+            <field name="model">cotisation.tranche</field>
+            <field name="arch" type="xml">
+                <list decoration-danger="state == 'en_retard'"
+                      decoration-success="state == 'payee'"
+                      decoration-warning="state == 'partiel'">
+                    <field name="name"/>
+                    <field name="adherent_id"/>
+                    <field name="date_prevue"/>
+                    <field name="montant_prevu" sum="Total prévu"/>
+                    <field name="montant_verse" sum="Total versé"/>
+                    <field name="reste" sum="Total reste"/>
+                    <field name="date_paiement"/>
+                    <field name="state" widget="badge"
+                           decoration-danger="state == 'en_retard'"
+                           decoration-success="state == 'payee'"
+                           decoration-warning="state == 'partiel'"
+                           decoration-info="state == 'en_attente'"/>
+                </list>
+            </field>
+        </record>
+
+
+
+    </data>
+</odoo>

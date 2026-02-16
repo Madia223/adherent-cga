@@ -38,6 +38,82 @@
         </field>
     </record>
 
+    <record id="view_adherant_form_adhesion_page" model="ir.ui.view">
+        <field name="name">res.partner.form.adhesion.page</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="priority">50</field>
+        <field name="arch" type="xml">
+
+            <xpath expr="//notebook" position="inside">
+                <page string="Adhésion CGA" name="page_adhesion_cga"
+                      invisible="not is_adherent">
+
+                    <!-- Résumé financier -->
+                    <group>
+                        <group string="Frais d'adhésion">
+                            <field name="montant_adhesion"/>
+                            <field name="total_verse_adhesion"/>
+                        </group>
+                        <group string="Situation">
+                            <field name="reste_adhesion"
+                                   decoration-danger="reste_adhesion &gt; 0"
+                                   decoration-success="reste_adhesion &lt;= 0"/>
+                            <field name="adhesion_soldee" widget="boolean_toggle"/>
+                        </group>
+                    </group>
+
+                    <separator string="Historique des versements"/>
+
+                    <!-- Tableau des versements (éditable en ligne) -->
+                    <field name="versement_adhesion_ids">
+                        <list editable="bottom">
+                            <field name="name" readonly="1"/>
+                            <field name="date_versement"/>
+                            <field name="montant" sum="Total"/>
+                            <field name="reste_apres" readonly="1"/>
+                            <field name="note"/>
+                        </list>
+                    </field>
+
+                </page>
+            </xpath>
+
+        </field>
+    </record>
+
+    <record id="view_adherant_form_cotisation_page" model="ir.ui.view">
+        <field name="name">res.partner.form.cotisation.page</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="priority">55</field>
+        <field name="arch" type="xml">
+
+            <xpath expr="//notebook" position="inside">
+                <page string="Cotisations CGA" name="page_cotisation_cga"
+                      invisible="not is_adherent">
+
+                    <field name="cotisation_plan_ids" readonly="1">
+                        <list>
+                            <field name="name"/>
+                            <field name="montant_total" sum="Total"/>
+                            <field name="nb_tranches"/>
+                            <field name="frequence"/>
+                            <field name="total_verse" sum="Versé"/>
+                            <field name="reste_global" sum="Reste"
+                                   decoration-danger="reste_global &gt; 0"
+                                   decoration-success="reste_global &lt;= 0"/>
+                            <field name="progression" widget="progressbar"/>
+                            <field name="state" widget="badge"/>
+                        </list>
+                    </field>
+
+                </page>
+            </xpath>
+
+        </field>
+    </record>
+
     <record id="view_adherent_list" model="ir.ui.view">
         <field name="name">ress.partner.adherent.list</field>
         <field name="model">res.partner</field>

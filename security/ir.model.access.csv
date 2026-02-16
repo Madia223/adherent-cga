@@ -4,3 +4,6 @@ access_cga_cga2,cga.cga,model_fiscal_taxe,base.group_user,1,1,1,1
 access_echeance,cga.echeance,model_echeance,base.group_user,1,1,1,1
 access_paiement,cga.paiement,model_paiement,base.group_user,1,1,1,1
 access_echeance_portal,echeance.portal,model_echeance,base.group_portal,1,0,0,0
+access_adhesion_versement,cga.adhesion.versement,model_adhesion_versement,base.group_user,1,1,1,1
+access_cotisation_plan,cga.cotisation.plan,model_cotisation_plan,base.group_user,1,1,1,1
+access_cotisation_tranche,cga.cotisation.tranche,model_cotisation_tranche,base.group_user,1,1,1,1
